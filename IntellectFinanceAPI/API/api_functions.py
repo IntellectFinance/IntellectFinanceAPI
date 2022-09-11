@@ -4,11 +4,11 @@ from IntellectFinanceAPI.API.Utility import send_http_request
 def news_by_source(*ignore, news_source, start_time, end_time): 
     """
     https://www.intellect.finance/API_Document#news_by_source
-    Get a list of news by the news source (i.e. WSJ, Bloomberg, or CNBC, etc). The specified date range has to be within the same UTC day. 
+    Get a list of news by the news source (i.e. WSJ, Bloomberg, or CNBC, etc). The max time range shall be less than 24.5 hours.
 
     :example: news_by_source(news_source='CNBC', start_time='2022-02-01 02:00:00', end_time='2022-02-01 12:00:00')
     
-    :exception: ['ParameterMissingError', 'ParameterInvalidError']
+    :exception: ['ParameterInvalidError', 'ParameterMissingError']
     :param news_source: Source of the news. Available sources are `['Bloomberg', 'Fox', 'CNBC', 'WSJ', 'CNN', 'New York Times', "Barron's", 'Reuters', 'Businesswire', 'PR Newswire']`.
     :param start_time: UTC start date time of the news.
     :param end_time: UTC start date time of the news.
@@ -41,11 +41,11 @@ def news_by_topic(*ignore, topic_name, start_date, end_date):
        "error_type": "TopicIsMergedToAnotherTopic", 
        "new_topic_name": "A_NEW_TOPIC_NAME", 
     }
-with HTTP code `301`. Thus, you can re-call this API with the new topic name showed in `A_NEW_TOPIC_NAME`. 
+<br/>with HTTP code `301`. Thus, you can re-call this API with the new topic name showed in `A_NEW_TOPIC_NAME`. 
 
     :example: news_by_topic(topic_name='Hidden impact on China's financial center', start_date='2022-03-30', end_date='2022-07-02')
     
-    :exception: ['ParameterMissingError', 'ParameterInvalidError', 'TopicIsMergedToAnotherTopicError']
+    :exception: ['ParameterInvalidError', 'ParameterMissingError', 'TopicIsMergedToAnotherTopicError']
     :param topic_name: A topic name. Note that we only accept topic names listed in the `topic_names` API.
     :param start_date: The start date (UTC) of the news.
     :param end_date: The end date (UTC) (including) of the news.
@@ -57,14 +57,14 @@ with HTTP code `301`. Thus, you can re-call this API with the new topic name sho
 def relevance_score_between_two_tickers(*ignore, ticker_1, ticker_2): 
     """
     https://www.intellect.finance/API_Document#relevance_score_between_two_tickers
-    Get the relevance score between two tickers. Note that the relevance score may change every day as we receive new information (i.e. new events, or news) about each ticker.
+    Get the relevance score between two tickers. The score measures the similarity of the two tickers/companies. Note that the relevance score may change every day as we receive new information (i.e. new events, or news) about each ticker.
 
     :example: relevance_score_between_two_tickers(ticker_1='GOOGL', ticker_2='MSFT')
     
-    :exception: ['ParameterMissingError']
+    :exception: ['ExceptionNoTickerFound', 'ParameterMissingError']
     :param ticker_1: A ticker.
     :param ticker_2: Another ticker.
-    :return: {'result': `The degree of relevance of this ticker to this topic, ranging from (0, 1). The higher the score, the more related this topic is about this ticker.`}
+    :return: {'result': `The degree of relevance or similarity between the two trickers, ranging from (0, 1). The higher the score, the more related this topic is about this ticker.`}
     """
     return send_http_request('relevance_score_between_two_tickers', ticker_1=ticker_1, ticker_2=ticker_2)
 
@@ -76,7 +76,7 @@ def relevant_tickers_by_ticker(*ignore, ticker):
 
     :example: relevant_tickers_by_ticker(ticker='GOOGL')
     
-    :exception: ['ParameterMissingError']
+    :exception: ['ExceptionNoTickerFound', 'ParameterMissingError']
     :param ticker: A ticker.
     :return: {'result': `A list of dictionaries, ordered by the relevance score (high to low). Each dictionary contains a relevant ticker to the input ticker, and the degree of their relevance (relevance sores).`}
     """
@@ -86,16 +86,16 @@ def relevant_tickers_by_ticker(*ignore, ticker):
 def relevant_tickers_by_topic(*ignore, topic_name, year): 
     """
     https://www.intellect.finance/API_Document#relevant_tickers_by_topic
-    Get the most relevant tickers under one topic, and the degree of their relevance. In case the topic you provide is merged with a new topic, we will return an JSON response 
+    Get the most relevant tickers under one topic, and the degree of the relevance of those tickers to that topic. In case the topic you provide is merged with a new topic, we will return an JSON response 
     {
        "error_type": "TopicIsMergedToAnotherTopic", 
        "new_topic_name": "A_NEW_TOPIC_NAME", 
     }
-with HTTP code `301`. Thus, you can re-call this API with the new topic name showed in `A_NEW_TOPIC_NAME`. 
+<br/>with HTTP code `301`. Thus, you can re-call this API with the new topic name showed in `A_NEW_TOPIC_NAME`. 
 
     :example: relevant_tickers_by_topic(topic_name='Hidden impact on China's financial center', year='2021')
     
-    :exception: ['TopicIsMergedToAnotherTopicError']
+    :exception: ['CannotFindTopicNameError', 'ParameterInvalidError', 'ParameterMissingError', 'TopicIsMergedToAnotherTopicError']
     :param topic_name: A topic name. Note that we only accept topic names found in the `topic_names` API.
     :param year: The year of the topic.
     :return: {'result': `A list of dictionaries, ordered by the relevance score (high to low). Each dictionary contains a relevant ticker to the input topic, and the degree of their relevance (relevance sores).`}
@@ -129,11 +129,11 @@ def sentiment_time_series_one_topic(*ignore, topic_name, start_date, end_date):
        "error_type": "TopicIsMergedToAnotherTopic", 
        "new_topic_name": "A_NEW_TOPIC_NAME", 
     }
-with HTTP code `301`. Thus, you can re-call this API with the new topic name showed in `A_NEW_TOPIC_NAME`. 
+<br/>with HTTP code `301`. Thus, you can re-call this API with the new topic name showed in `A_NEW_TOPIC_NAME`. 
 
     :example: sentiment_time_series_one_topic(topic_name='Hidden impact on China's financial center', start_date='2022-03-30', end_date='2022-06-02')
     
-    :exception: ['ParameterMissingError', 'ParameterInvalidError', 'TopicIsMergedToAnotherTopicError']
+    :exception: ['CannotFindTopicNameError', 'ParameterInvalidError', 'ParameterMissingError', 'TopicIsMergedToAnotherTopicError']
     :param topic_name: A topic name. Note that we only accept topic names listed in the `topic_names` API.
     :param start_date: The start date (UTC) of the news.
     :param end_date: The end date (UTC) (including) of the news.
@@ -149,7 +149,7 @@ def sentiment_time_series_one_ticker(*ignore, ticker, start_date, end_date):
 
     :example: sentiment_time_series_one_ticker(ticker='AMZN', start_date='2021-06-30', end_date='2021-09-02')
     
-    :exception: ['ParameterMissingError', 'ParameterInvalidError']
+    :exception: ['ExceptionNoTickerFound', 'ParameterInvalidError', 'ParameterMissingError']
     :param ticker: A ticker.
     :param start_date: The start date (UTC) of the news.
     :param end_date: The end date (UTC) (including) of the news.
@@ -165,7 +165,7 @@ def annualized_sharpe_ratio_by_ticker(*ignore, ticker, start_date, end_date, ris
 
     :example: annualized_sharpe_ratio_by_ticker(ticker='MSFT', start_date='2021-01-01', end_date='2021-12-31', risk_free_rate=0.02, smart_sharpe_flag='false')
     
-    :exception: ['ParameterInvalidError', 'ParameterMissingError']
+    :exception: ['ExceptionNoTickerFound', 'ParameterInvalidError', 'ParameterMissingError']
     :param ticker: A ticker.
     :param start_date: Start date. Its format should be `YYYY-MM-DD`.
     :param end_date: End date (including). Its format should be `YYYY-MM-DD`. The max time range between `start_date` and `end_date` has to be less than 370 days.
@@ -183,7 +183,7 @@ def max_drawdown_by_ticker(*ignore, ticker, start_date, end_date):
 
     :example: max_drawdown_by_ticker(ticker='MSFT', start_date='2021-01-01', end_date='2021-12-31')
     
-    :exception: ['ParameterInvalidError', 'ParameterMissingError']
+    :exception: ['ExceptionNoTickerFound', 'ParameterInvalidError', 'ParameterMissingError']
     :param ticker: A ticker.
     :param start_date: Start date. Its format should be `YYYY-MM-DD`.
     :param end_date: End date (including). Its format should be `YYYY-MM-DD`. Should be less 370 days from the start_date.
@@ -195,11 +195,13 @@ def max_drawdown_by_ticker(*ignore, ticker, start_date, end_date):
 def treasury_yield(*ignore, duration, start_date, end_date): 
     """
     https://www.intellect.finance/API_Document#treasury_yield
+    
     Get the U.S. Treasury par yield curve rates for a time period (has to be less than 370 days). These rates are commonly referred to as `Constant Maturity Treasury` rates, or CMTs. 
     Yields are interpolated by the Treasury from the daily par yield curve. 
     This curve, which relates the yield on a security to its time to maturity, 
     is based on the closing market bid prices on the most recently auctioned Treasury securities in the over-the-counter market. 
-    See the data source here: https://home.treasury.gov/resource-center/data-chart-center/interest-rates/TextView?type=daily_treasury_yield_curve&field_tdr_date_value_month=202208
+    See the <a href='https://home.treasury.gov/resource-center/data-chart-center/interest-rates/TextView?type=daily_treasury_yield_curve&field_tdr_date_value_month=202208' target='_blank'>data source here</a>.
+    
 
     :example: treasury_yield(duration='duration_1mo', start_date='2021-01-01', end_date='2021-03-01')
     
@@ -215,13 +217,15 @@ def treasury_yield(*ignore, duration, start_date, end_date):
 def treasury_real_yield(*ignore, duration, start_date, end_date): 
     """
     https://www.intellect.finance/API_Document#treasury_real_yield
+    
     Get the U.S. Treasury par real yield curve rates for a time period (has to be less than 370 days). 
     These rates are commonly referred to as `Real Constant Maturity Treasury` rates, or R-CMTs. 
     Par real yields on Treasury Inflation Protected Securities (TIPS) at `constant maturity` are interpolated by the U.S. 
     Treasury from Treasury's daily par real yield curve. 
     These par real yields are calculated from indicative secondary market quotations obtained 
     by the Federal Reserve Bank of New York.  
-    See the data source here: https://home.treasury.gov/resource-center/data-chart-center/interest-rates/TextView?type=daily_treasury_real_yield_curve&field_tdr_date_value_month=202208
+    See the <a href='https://home.treasury.gov/resource-center/data-chart-center/interest-rates/TextView?type=daily_treasury_real_yield_curve&field_tdr_date_value_month=202208' target='_blank'>data source here</a>.
+    
 
     :example: treasury_real_yield(duration='duration_10yr', start_date='2021-01-01', end_date='2021-03-01')
     
@@ -237,10 +241,11 @@ def treasury_real_yield(*ignore, duration, start_date, end_date):
 def fed_fund_target_rate(*ignore, start_date, end_date): 
     """
     https://www.intellect.finance/API_Document#fed_fund_target_rate
+    
     Get the Federal fund target rate for a time period (has to be less than 370 days). The federal funds rate is the interest rate at which depository institutions trade federal funds 
     (balances held at Federal Reserve Banks) with each other overnight.
     The Federal Open Market Committee (FOMC) meets eight times a year to determine the federal funds target rate. 
-    See https://fred.stlouisfed.org/series/DFF.
+    See <a href='https://fred.stlouisfed.org/series/DFF' target='_blank'>https://fred.stlouisfed.org/series/DFF.</a>
 
     :example: fed_fund_target_rate(start_date='2021-01-01', end_date='2021-03-01')
     
@@ -306,7 +311,7 @@ def list_sec_daily_filings(*ignore, date, cik=None, _NEXT_TOKEN_=None):
 
     :example: list_sec_daily_filings(date='2022-02-01', cik='1652044', _NEXT_TOKEN_=500)
     
-    :exception: ['ParameterMissingError', 'ParameterInvalidError']
+    :exception: ['ParameterInvalidError', 'ParameterMissingError']
     :param date: Date that SEC indexed the filings. Usually this date is the filling date.
     :param cik: Optional. If you only know the ticker of a company (say AAPL), you can get the corresponding CIK of that company can be retrieved through the `company_info_by_ticker` API.
     :param _NEXT_TOKEN_: Optional. Next token, used to continue to retrieve more data. If not provided, we will retrieve the data from the beginning.
@@ -327,7 +332,7 @@ def sec_raw_financial_data(*ignore, cik, year_quarter, statement_type):
 
     :example: sec_raw_financial_data(cik=320193, year_quarter='2022Q1', statement_type='INCOME_STATEMENT')
     
-    :exception: ['ParameterMissingError', 'ParameterInvalidError']
+    :exception: ['ParameterInvalidError', 'ParameterMissingError']
     :param cik: If you only know the ticker of a company (say AAPL), you can get the corresponding CIK of that company can be retrieved through the `company_info_by_ticker` API.
     :param year_quarter: The year-quarter of the statement, in the format such as `2022Q1`.
     :param statement_type: Must be one of ['CASHFLOW', 'BALANCE_SHEET', 'INCOME_STATEMENT'].
@@ -346,7 +351,7 @@ def sec_8k_6k_and_other(*ignore, cik, start_date, end_date):
 
     :example: sec_8k_6k_and_other(cik='1652044', start_date='2022-02-01', end_date='2022-02-05')
     
-    :exception: ['ParameterMissingError', 'ParameterInvalidError']
+    :exception: ['ParameterInvalidError', 'ParameterMissingError']
     :param cik: If you only know the ticker of a company (say AAPL), you can get the corresponding CIK of that company can be retrieved through the `company_info_by_ticker` API.
     :param start_date: Start date for the filing date range.
     :param end_date: End date for the filing date range.
@@ -358,14 +363,14 @@ def sec_8k_6k_and_other(*ignore, cik, start_date, end_date):
 def sec_10k_10q_20f_40f(*ignore, cik, start_date, end_date): 
     """
     https://www.intellect.finance/API_Document#sec_10k_10q_20f_40f
-    Get a list of 10-K, 10-Q, 20-F, or 40-F filings in a certain date period (cannot be more than 95 days). 
+    Get a list of 10-K, 10-Q, 20-F, or 40-F filings in a certain date period (cannot be more than 380 days). 
     Such filings are the quarterly or annual report of companies. 
     10-K (annual) and 10-Q (quarterly) are for domestic companies (U.S.), 
     whereas 20-F and 40-F (both annual) are for foreign companies. 
 
     :example: sec_10k_10q_20f_40f(cik='1652044', start_date='2022-02-01', end_date='2022-02-05')
     
-    :exception: ['ParameterMissingError', 'ParameterInvalidError']
+    :exception: ['ParameterInvalidError', 'ParameterMissingError']
     :param cik: If you only know the ticker of a company (say AAPL), you can get the corresponding CIK of that company can be retrieved through the `company_info_by_ticker` API.
     :param start_date: Start date for the filing date range.
     :param end_date: End date for the filing date range.
@@ -384,7 +389,7 @@ def sec_345(*ignore, cik, start_date, end_date):
 
     :example: sec_345(cik='1652044', start_date='2022-02-01', end_date='2022-02-05')
     
-    :exception: ['ParameterMissingError', 'ParameterInvalidError']
+    :exception: ['ParameterInvalidError', 'ParameterMissingError']
     :param cik: If you only know the ticker of a company (say AAPL), you can get the corresponding CIK of that company can be retrieved through the `company_info_by_ticker` API.
     :param start_date: Start date for the filing date range.
     :param end_date: End date for the filing date range.

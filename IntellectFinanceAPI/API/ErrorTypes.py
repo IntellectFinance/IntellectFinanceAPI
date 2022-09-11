@@ -26,7 +26,7 @@ class APITotalCreditsExceed(APIError):
 
 class APIQPSLimitExceed(APIError):
     """
-    If you call the API too fast and exceeds your plan's QPS (query per second) limit, we will raise this error
+    If you call the API too fast and exceeds your plan's QPS (query per second) limit, we will raise this error.
     """
 
 
@@ -39,6 +39,10 @@ class UnknownAPIError(APIError):
 class ParameterMissingError(APIError):
     """Exception raised if one or more required param values are missing.
     """
+
+
+class CannotFindTopicNameError(APIError):
+    pass
 
 
 class TopicIsMergedToAnotherTopicError(APIError):
@@ -57,6 +61,10 @@ class APIKeysNotFound(APIError):
     """
     When you forget to provide the APT keys
     """
+    pass
+
+
+class ExceptionNoTickerFound(APIError):
     pass
 
 
