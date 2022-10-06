@@ -36,14 +36,14 @@ def news_by_ticker(*ignore, ticker, start_date, end_date):
 def news_by_topic(*ignore, topic_name, start_date, end_date): 
     """
     https://www.intellect.finance/API_Document#news_by_topic
-    Get list of news under one topic within a certain date range (cannot be more than 95 days). In case the topic you provide is merged with a new topic, we will return an JSON response 
+    Get list of news under one topic within a certain date range (cannot be more than 200 days). In case the topic you provide is merged with a new topic, we will return an JSON response 
     {
        "error_type": "TopicIsMergedToAnotherTopic", 
        "new_topic_name": "A_NEW_TOPIC_NAME", 
     }
 <br/>with HTTP code `301`. Thus, you can re-call this API with the new topic name showed in `A_NEW_TOPIC_NAME`. 
 
-    :example: news_by_topic(topic_name='Hidden impact on China's financial center', start_date='2022-03-30', end_date='2022-07-02')
+    :example: news_by_topic(topic_name='Hidden impact on China's financial center', start_date='2022-03-30', end_date='2022-10-15')
     
     :exception: ['ParameterInvalidError', 'ParameterMissingError', 'TopicIsMergedToAnotherTopicError']
     :param topic_name: A topic name. Note that we only accept topic names listed in the `topic_names` API.
@@ -64,7 +64,7 @@ def relevance_score_between_two_tickers(*ignore, ticker_1, ticker_2):
     :exception: ['ExceptionNoTickerFound', 'ParameterMissingError']
     :param ticker_1: A ticker.
     :param ticker_2: Another ticker.
-    :return: {'result': `The degree of relevance or similarity between the two trickers, ranging from (0, 1). The higher the score, the more related this topic is about this ticker.`}
+    :return: {'result': `The degree of relevance or similarity between the two tickers, ranging from (0, 1). The higher the score, the more related/similar are these two tickers.`}
     """
     return send_http_request('relevance_score_between_two_tickers', ticker_1=ticker_1, ticker_2=ticker_2)
 
@@ -103,35 +103,36 @@ def relevant_tickers_by_topic(*ignore, topic_name, year):
     return send_http_request('relevant_tickers_by_topic', topic_name=topic_name, year=year)
 
 
-def topic_names(*ignore, start_date, end_date): 
+def topic_names(*ignore, start_date, end_date, topic_name=None): 
     """
     https://www.intellect.finance/API_Document#topic_names
-    Get a list of topic names within a date range (has to be less or equal than 95 days). 
+    Get a list of topic names within a date range (has to be less or equal than 400 days). 
     The topic names may change at any time. For example, 
     we may merge topics `A` and `B` together and create a new topic `C`. 
     Then the list will no longer contain topics `A` and `B`.
 
-    :example: topic_names(start_date='2022-02-01', end_date='2022-02-03')
+    :example: topic_names(start_date='2022-02-01', end_date='2022-02-03', topic_name='Zillow's near-term fate hinges')
     
     :exception: ['ParameterInvalidError', 'ParameterMissingError']
     :param start_date: Start date (UTC) of the news range. Its format should be `YYYY-MM-DD`.
     :param end_date: End date (UTC) (including) of the news range. Its format should be `YYYY-MM-DD`. The data range between start date to end date shall not be more than 31 days.
+    :param topic_name: Optional. If you already know which topic's information you want to get, you can directly provide a topic name as a filter. This can save your credits and reduce the latency of this API.
     :return: {'result': `A hashmap of topics. Key is the topic name, and value is the information about the topic.`}
     """
-    return send_http_request('topic_names', start_date=start_date, end_date=end_date)
+    return send_http_request('topic_names', start_date=start_date, end_date=end_date, topic_name=topic_name)
 
 
 def sentiment_time_series_one_topic(*ignore, topic_name, start_date, end_date): 
     """
     https://www.intellect.finance/API_Document#sentiment_time_series_one_topic
-    Get a time series of sentiment scores for a topic (the time range cannot be more than 65 days). In case the topic you provide is merged with a new topic, we will return an JSON response 
+    Get a time series of sentiment scores for a topic (the time range cannot be more than 740 days). In case the topic you provide is merged with a new topic, we will return an JSON response 
     {
        "error_type": "TopicIsMergedToAnotherTopic", 
        "new_topic_name": "A_NEW_TOPIC_NAME", 
     }
 <br/>with HTTP code `301`. Thus, you can re-call this API with the new topic name showed in `A_NEW_TOPIC_NAME`. 
 
-    :example: sentiment_time_series_one_topic(topic_name='Hidden impact on China's financial center', start_date='2022-03-30', end_date='2022-06-02')
+    :example: sentiment_time_series_one_topic(topic_name='Hidden impact on China's financial center', start_date='2022-03-30', end_date='2024-04-07')
     
     :exception: ['CannotFindTopicNameError', 'ParameterInvalidError', 'ParameterMissingError', 'TopicIsMergedToAnotherTopicError']
     :param topic_name: A topic name. Note that we only accept topic names listed in the `topic_names` API.
@@ -145,9 +146,9 @@ def sentiment_time_series_one_topic(*ignore, topic_name, start_date, end_date):
 def sentiment_time_series_one_ticker(*ignore, ticker, start_date, end_date): 
     """
     https://www.intellect.finance/API_Document#sentiment_time_series_one_ticker
-    Get a time series of sentiment scores for a ticker (the time range cannot be more than 65 days). 
+    Get a time series of sentiment scores for a ticker (the time range cannot be more than 740 days). 
 
-    :example: sentiment_time_series_one_ticker(ticker='AMZN', start_date='2021-06-30', end_date='2021-09-02')
+    :example: sentiment_time_series_one_ticker(ticker='AMZN', start_date='2021-06-30', end_date='2023-07-09')
     
     :exception: ['ExceptionNoTickerFound', 'ParameterInvalidError', 'ParameterMissingError']
     :param ticker: A ticker.
@@ -245,7 +246,7 @@ def fed_fund_target_rate(*ignore, start_date, end_date):
     Get the Federal fund target rate for a time period (has to be less than 370 days). The federal funds rate is the interest rate at which depository institutions trade federal funds 
     (balances held at Federal Reserve Banks) with each other overnight.
     The Federal Open Market Committee (FOMC) meets eight times a year to determine the federal funds target rate. 
-    See <a href='https://fred.stlouisfed.org/series/DFF' target='_blank'>https://fred.stlouisfed.org/series/DFF.</a>
+    See <a href='https://fred.stlouisfed.org/series/DFF' target='_blank'>https://fred.stlouisfed.org/series/DFF</a>.
 
     :example: fed_fund_target_rate(start_date='2021-01-01', end_date='2021-03-01')
     
