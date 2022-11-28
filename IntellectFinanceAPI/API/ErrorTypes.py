@@ -45,6 +45,11 @@ class CannotFindTopicNameError(APIError):
     pass
 
 
+class CannotFindTickerNameError(APIError):
+    pass
+
+
+
 class TopicIsMergedToAnotherTopicError(APIError):
     STATUS_CODE = 301  # 301 Moved Permanently
     JSON_EXAMPLE_FOR_API_DOC = {"error_type": "TopicIsMergedToAnotherTopic", "new_topic_name": "A_NEW_TOPIC_NAME"}

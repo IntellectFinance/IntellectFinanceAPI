@@ -17,20 +17,21 @@ def news_by_source(*ignore, news_source, start_time, end_time):
     return send_http_request('news_by_source', news_source=news_source, start_time=start_time, end_time=end_time)
 
 
-def news_by_ticker(*ignore, ticker, start_date, end_date): 
+def news_by_ticker(*ignore, ticker, start_date, end_date, stop_at_number_of_news=None): 
     """
     https://www.intellect.finance/API_Document#news_by_ticker
-    Get a list of news that is relevant to a company. Note that the input date range of the news has to be less than 32 days.
+    Get a list of news that is relevant to a company. Maximum number of news to retrieve is 1000.
 
-    :example: news_by_ticker(ticker='AAPL', start_date='2022-02-01', end_date='2022-02-08')
+    :example: news_by_ticker(ticker='AAPL', start_date='2022-02-01', end_date='2022-02-08', stop_at_number_of_news='2022-02-08')
     
     :exception: ['ParameterInvalidError', 'ParameterMissingError']
     :param ticker: The ticker.
     :param start_date: Start date (UTC) of the news range. Its format should be `YYYY-MM-DD`.
     :param end_date: End date (UTC) (including) of the news range. Its format should be `YYYY-MM-DD`.
+    :param stop_at_number_of_news: Optional. Max number of news to retrieve. Must be an integer between 1 and 1000. Default (if not provided) is 1000. It means we will only retrieve the top `stop_at_number_of_news` most latest news.
     :return: {'result': `A list of news.`}
     """
-    return send_http_request('news_by_ticker', ticker=ticker, start_date=start_date, end_date=end_date)
+    return send_http_request('news_by_ticker', ticker=ticker, start_date=start_date, end_date=end_date, stop_at_number_of_news=stop_at_number_of_news)
 
 
 def news_by_topic(*ignore, topic_name, start_date, end_date): 
@@ -52,6 +53,21 @@ def news_by_topic(*ignore, topic_name, start_date, end_date):
     :return: {'result': `A list of news.`}
     """
     return send_http_request('news_by_topic', topic_name=topic_name, start_date=start_date, end_date=end_date)
+
+
+def list_tickers_with_news(*ignore, min_number_news_per_ticker, year=None): 
+    """
+    https://www.intellect.finance/API_Document#list_tickers_with_news
+    Get a list of tickers and their number of news, sorted by the number of news in descending order.
+
+    :example: list_tickers_with_news(min_number_news_per_ticker=10, year='2022')
+    
+    :exception: ['ParameterInvalidError', 'ParameterMissingError']
+    :param min_number_news_per_ticker: Used to exclude the tickers with number of news less than the `min_number_news_per_ticker`. Default value is 10.
+    :param year: Optional. Filter the year of news. If not provided, we will pull data for the current year and the previous year.
+    :return: {'result': `A list of hashmaps.`}
+    """
+    return send_http_request('list_tickers_with_news', min_number_news_per_ticker=min_number_news_per_ticker, year=year)
 
 
 def relevance_score_between_two_tickers(*ignore, ticker_1, ticker_2): 
@@ -280,7 +296,7 @@ def company_info_by_cik(*ignore, cik):
     
     :exception: ['ParameterMissingError']
     :param cik: A Central Index Key (CIK) number.
-    :return: {'result': `A list of company information, deduped by `cik`, `sic`, `ticker`, and `cleaned_name`.`}
+    :return: {'result': `A list of company information, deduped by ['cik', 'sic', 'ticker', 'cleaned_name'].`}
     """
     return send_http_request('company_info_by_cik', cik=cik)
 
@@ -294,9 +310,23 @@ def company_info_by_ticker(*ignore, ticker):
     
     :exception: ['ParameterMissingError']
     :param ticker: A ticker.
-    :return: {'result': `A list of company information, deduped by `cik`, `sic`, `ticker`, and `cleaned_name`.`}
+    :return: {'result': `A list of company information, deduped by ['cik', 'sic', 'ticker', 'cleaned_name'].`}
     """
     return send_http_request('company_info_by_ticker', ticker=ticker)
+
+
+def search_company(*ignore, input): 
+    """
+    https://www.intellect.finance/API_Document#search_company
+    Get company information by searching a company's ticker, CIK or name. This API supports the auto-complete functionality (powered by Elasticsearch). Auto-completion means that you don't need to input the full name of the company. For example, just input `starb`, we will return `Starbucks`. Note that We will return at most 20 items in this search API. 
+
+    :example: search_company(input='Starb')
+    
+    :exception: ['ParameterMissingError']
+    :param input: A company's ticker, CIK or name (don't need to input the full name).
+    :return: {'result': `A list of company information, deduped by ['cik', 'sic', 'ticker', 'cleaned_name'].`}
+    """
+    return send_http_request('search_company', input=input)
 
 
 def list_sec_daily_filings(*ignore, date, cik=None, _NEXT_TOKEN_=None): 
