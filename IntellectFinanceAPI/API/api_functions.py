@@ -4,7 +4,7 @@ from IntellectFinanceAPI.API.Utility import send_http_request
 def news_by_source(*ignore, news_source, start_time, end_time): 
     """
     https://www.intellect.finance/API_Document#news_by_source
-    Get a list of news by the news source (i.e. WSJ, Bloomberg, or CNBC, etc). The max time range shall be less than 24.5 hours.
+    Get a list of news by the news source (i.e. WSJ, Bloomberg, or CNBC, etc). The max time range shall be less than 70 hours.
 
     :example: news_by_source(news_source='CNBC', start_time='2022-02-01 02:00:00', end_time='2022-02-01 12:00:00')
     
@@ -127,7 +127,7 @@ def topic_names(*ignore, start_date, end_date, topic_name=None):
     we may merge topics `A` and `B` together and create a new topic `C`. 
     Then the list will no longer contain topics `A` and `B`.
 
-    :example: topic_names(start_date='2022-02-01', end_date='2022-02-03', topic_name='Zillow's near-term fate hinges')
+    :example: topic_names(start_date='2021-02-01', end_date='2022-02-03', topic_name='Zillow's near-term fate hinges')
     
     :exception: ['ParameterInvalidError', 'ParameterMissingError']
     :param start_date: Start date (UTC) of the news range. Its format should be `YYYY-MM-DD`.
@@ -294,7 +294,7 @@ def company_info_by_cik(*ignore, cik):
 
     :example: company_info_by_cik(cik=1652044)
     
-    :exception: ['ParameterMissingError']
+    :exception: ['ExceptionNoCIKFound', 'ParameterMissingError']
     :param cik: A Central Index Key (CIK) number.
     :return: {'result': `A list of company information, deduped by ['cik', 'sic', 'ticker', 'cleaned_name'].`}
     """
@@ -308,7 +308,7 @@ def company_info_by_ticker(*ignore, ticker):
 
     :example: company_info_by_ticker(ticker='AAPL')
     
-    :exception: ['ParameterMissingError']
+    :exception: ['ExceptionNoTickerFound', 'ParameterMissingError']
     :param ticker: A ticker.
     :return: {'result': `A list of company information, deduped by ['cik', 'sic', 'ticker', 'cleaned_name'].`}
     """
@@ -351,7 +351,7 @@ def list_sec_daily_filings(*ignore, date, cik=None, _NEXT_TOKEN_=None):
     return send_http_request('list_sec_daily_filings', date=date, cik=cik, _NEXT_TOKEN_=_NEXT_TOKEN_)
 
 
-def sec_raw_financial_data(*ignore, cik, year_quarter, statement_type): 
+def sec_raw_financial_data(*ignore, cik_or_ticker, year_quarter, statement_type): 
     """
     https://www.intellect.finance/API_Document#sec_raw_financial_data
     Get the financial statement reported by a company in a given quarter. 
@@ -361,37 +361,54 @@ def sec_raw_financial_data(*ignore, cik, year_quarter, statement_type):
     ranging from `IPadMember`, `IPhoneMember`, `MacMember`, `WearablesHomeandAccessoriesMember`, and `ServiceMember` etc (these are the dimension values). 
     See the `dimension_type` in the return.
 
-    :example: sec_raw_financial_data(cik=320193, year_quarter='2022Q1', statement_type='INCOME_STATEMENT')
+    :example: sec_raw_financial_data(cik_or_ticker=320193, year_quarter='2022Q1', statement_type='INCOME_STATEMENT')
     
-    :exception: ['ParameterInvalidError', 'ParameterMissingError']
-    :param cik: If you only know the ticker of a company (say AAPL), you can get the corresponding CIK of that company can be retrieved through the `company_info_by_ticker` API.
+    :exception: ['ExceptionNoCIKFound', 'ExceptionNoTickerFound', 'ParameterInvalidError', 'ParameterMissingError']
+    :param cik_or_ticker: CIK or ticker.
     :param year_quarter: The year-quarter of the statement, in the format such as `2022Q1`.
     :param statement_type: Must be one of ['CASHFLOW', 'BALANCE_SHEET', 'INCOME_STATEMENT'].
     :return: {'result': `A list of items in the statement.`}
     """
-    return send_http_request('sec_raw_financial_data', cik=cik, year_quarter=year_quarter, statement_type=statement_type)
+    return send_http_request('sec_raw_financial_data', cik_or_ticker=cik_or_ticker, year_quarter=year_quarter, statement_type=statement_type)
 
 
-def sec_8k_6k_and_other(*ignore, cik, start_date, end_date): 
+def sec_8k_6k(*ignore, cik_or_ticker, start_date, end_date): 
     """
-    https://www.intellect.finance/API_Document#sec_8k_6k_and_other
-    Get a list of 8-K, 6-K, and other filings (i.e. 13-F, 13-H, SC TO-T, CORRESP, DEF 14A, DEFA14A, PX14A6G, EC STAFF LETTER, etc) filings in a certain date period (cannot be more than 95 days). 
+    https://www.intellect.finance/API_Document#sec_8k_6k
+    Get a list of 8-K or 6-K filings from start_date to end_date (cannot be more than 700 days). 
     8-K and 6-K are especially important as they are to announce the material events (i.e. deal, merger, earning, or new product, etc.) of a company. 
     8-K are for domestic companies (U.S.), whereas 6-K are for foreign companies. 
     Note that this API does not include 10-K, 10-Q, 20-F, 40-F, 3, 4, 5, and SC 13. These filings have their own separate APIs. 
 
-    :example: sec_8k_6k_and_other(cik='1652044', start_date='2022-02-01', end_date='2022-02-05')
+    :example: sec_8k_6k(cik_or_ticker='1652044', start_date='2022-02-01', end_date='2022-02-05')
     
-    :exception: ['ParameterInvalidError', 'ParameterMissingError']
-    :param cik: If you only know the ticker of a company (say AAPL), you can get the corresponding CIK of that company can be retrieved through the `company_info_by_ticker` API.
+    :exception: ['ExceptionNoCIKFound', 'ExceptionNoTickerFound', 'ParameterInvalidError', 'ParameterMissingError']
+    :param cik_or_ticker: CIK or ticker.
     :param start_date: Start date for the filing date range.
     :param end_date: End date for the filing date range.
     :return: {'result': `A list of filings.`}
     """
-    return send_http_request('sec_8k_6k_and_other', cik=cik, start_date=start_date, end_date=end_date)
+    return send_http_request('sec_8k_6k', cik_or_ticker=cik_or_ticker, start_date=start_date, end_date=end_date)
 
 
-def sec_10k_10q_20f_40f(*ignore, cik, start_date, end_date): 
+def sec_other(*ignore, cik_or_ticker, start_date, end_date): 
+    """
+    https://www.intellect.finance/API_Document#sec_other
+    Get a list of `other` filings (i.e. 13-F, 13-H, SC TO-T, CORRESP, DEF 14A, DEFA14A, PX14A6G, EC STAFF LETTER, etc) filings in a certain date period (cannot be more than 190 days). 
+    Note that this API does not include 10-K, 10-Q, 20-F, 40-F, 3, 4, 5, 8-K, 6-K, and SC 13. These filings have their own separate APIs. 
+
+    :example: sec_other(cik_or_ticker='1652044', start_date='2022-02-01', end_date='2022-02-05')
+    
+    :exception: ['ExceptionNoCIKFound', 'ExceptionNoTickerFound', 'ParameterInvalidError', 'ParameterMissingError']
+    :param cik_or_ticker: CIK or ticker.
+    :param start_date: Start date for the filing date range.
+    :param end_date: End date for the filing date range.
+    :return: {'result': `A list of filings.`}
+    """
+    return send_http_request('sec_other', cik_or_ticker=cik_or_ticker, start_date=start_date, end_date=end_date)
+
+
+def sec_10k_10q_20f_40f(*ignore, cik_or_ticker, start_date, end_date): 
     """
     https://www.intellect.finance/API_Document#sec_10k_10q_20f_40f
     Get a list of 10-K, 10-Q, 20-F, or 40-F filings in a certain date period (cannot be more than 380 days). 
@@ -399,18 +416,18 @@ def sec_10k_10q_20f_40f(*ignore, cik, start_date, end_date):
     10-K (annual) and 10-Q (quarterly) are for domestic companies (U.S.), 
     whereas 20-F and 40-F (both annual) are for foreign companies. 
 
-    :example: sec_10k_10q_20f_40f(cik='1652044', start_date='2022-02-01', end_date='2022-02-05')
+    :example: sec_10k_10q_20f_40f(cik_or_ticker='1652044', start_date='2022-02-01', end_date='2022-02-05')
     
-    :exception: ['ParameterInvalidError', 'ParameterMissingError']
-    :param cik: If you only know the ticker of a company (say AAPL), you can get the corresponding CIK of that company can be retrieved through the `company_info_by_ticker` API.
+    :exception: ['ExceptionNoCIKFound', 'ExceptionNoTickerFound', 'ParameterInvalidError', 'ParameterMissingError']
+    :param cik_or_ticker: CIK or ticker.
     :param start_date: Start date for the filing date range.
     :param end_date: End date for the filing date range.
     :return: {'result': `A list of filings.`}
     """
-    return send_http_request('sec_10k_10q_20f_40f', cik=cik, start_date=start_date, end_date=end_date)
+    return send_http_request('sec_10k_10q_20f_40f', cik_or_ticker=cik_or_ticker, start_date=start_date, end_date=end_date)
 
 
-def sec_345(*ignore, cik, start_date, end_date): 
+def sec_345(*ignore, cik_or_ticker, start_date, end_date): 
     """
     https://www.intellect.finance/API_Document#sec_345
     Get a list of Form `3`, `4`, and `5` filings. 
@@ -418,12 +435,12 @@ def sec_345(*ignore, cik, start_date, end_date):
     Form `4` is for the changes in ownership for insiders. 
     Form 5 is used if insiders had conducted security transactions during the year but failed to report them via SEC Form. 
 
-    :example: sec_345(cik='1652044', start_date='2022-02-01', end_date='2022-02-05')
+    :example: sec_345(cik_or_ticker='1652044', start_date='2022-02-01', end_date='2022-02-05')
     
-    :exception: ['ParameterInvalidError', 'ParameterMissingError']
-    :param cik: If you only know the ticker of a company (say AAPL), you can get the corresponding CIK of that company can be retrieved through the `company_info_by_ticker` API.
+    :exception: ['ExceptionNoCIKFound', 'ExceptionNoTickerFound', 'ParameterInvalidError', 'ParameterMissingError']
+    :param cik_or_ticker: CIK or ticker.
     :param start_date: Start date for the filing date range.
     :param end_date: End date for the filing date range.
     :return: {'result': `A list of filings.`}
     """
-    return send_http_request('sec_345', cik=cik, start_date=start_date, end_date=end_date)
+    return send_http_request('sec_345', cik_or_ticker=cik_or_ticker, start_date=start_date, end_date=end_date)
