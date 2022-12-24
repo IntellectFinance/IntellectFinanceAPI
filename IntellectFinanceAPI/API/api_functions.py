@@ -17,34 +17,36 @@ def news_by_source(*ignore, news_source, start_time, end_time):
     return send_http_request('news_by_source', news_source=news_source, start_time=start_time, end_time=end_time)
 
 
-def news_by_ticker(*ignore, ticker, start_date, end_date, stop_at_number_of_news=None): 
+def news_by_ticker(*ignore, ticker, start_date, end_date, stop_at_number_of_news=None, if_dedupe_news_ind=None, if_most_relevant_news_ind=None): 
     """
     https://www.intellect.finance/API_Document#news_by_ticker
-    Get a list of news that is relevant to a company. Maximum number of news to retrieve is 1000.
+    Get a list of news that is relevant to a company. The list will be sorted by the news' publish time (descending, which means later news will be on top of the list). Maximum number of news to retrieve is 1000.
 
-    :example: news_by_ticker(ticker='AAPL', start_date='2022-02-01', end_date='2022-02-08', stop_at_number_of_news='2022-02-08')
+    :example: news_by_ticker(ticker='AAPL', start_date='2022-02-01', end_date='2022-02-08', stop_at_number_of_news=1000, if_dedupe_news_ind='True', if_most_relevant_news_ind='False')
     
     :exception: ['ParameterInvalidError', 'ParameterMissingError']
     :param ticker: The ticker.
     :param start_date: Start date (UTC) of the news range. Its format should be `YYYY-MM-DD`.
     :param end_date: End date (UTC) (including) of the news range. Its format should be `YYYY-MM-DD`.
     :param stop_at_number_of_news: Optional. Max number of news to retrieve. Must be an integer between 1 and 1000. Default (if not provided) is 1000. It means we will only retrieve the top `stop_at_number_of_news` most latest news.
+    :param if_dedupe_news_ind: Optional. Sometimes one similar news will be reported by several different news sources. For example, on 2022-12-08, CNBC, WSJ and Bloomberg all reported the news that "FTC Sues to Block Microsoft’s Acquisition of Activision Blizzard". This option will enable to dedupe such duplicated news (typically keep the earliest news). Default is `True`. You can also get ALL the news (including the duplicated ones) by providing `False`.
+    :param if_most_relevant_news_ind: Optional. Pull relevant news only (Score of the relevance (`cos`) has to be equal or larger than 0.6 for the inputted ticker). Default is False.
     :return: {'result': `A list of news.`}
     """
-    return send_http_request('news_by_ticker', ticker=ticker, start_date=start_date, end_date=end_date, stop_at_number_of_news=stop_at_number_of_news)
+    return send_http_request('news_by_ticker', ticker=ticker, start_date=start_date, end_date=end_date, stop_at_number_of_news=stop_at_number_of_news, if_dedupe_news_ind=if_dedupe_news_ind, if_most_relevant_news_ind=if_most_relevant_news_ind)
 
 
 def news_by_topic(*ignore, topic_name, start_date, end_date): 
     """
     https://www.intellect.finance/API_Document#news_by_topic
-    Get list of news under one topic within a certain date range (cannot be more than 200 days). In case the topic you provide is merged with a new topic, we will return an JSON response 
+    Get list of news under one topic within a certain date range (cannot be more than 400 days). In case the topic you provide is merged with a new topic, we will return an JSON response 
     {
        "error_type": "TopicIsMergedToAnotherTopic", 
        "new_topic_name": "A_NEW_TOPIC_NAME", 
     }
 <br/>with HTTP code `301`. Thus, you can re-call this API with the new topic name showed in `A_NEW_TOPIC_NAME`. 
 
-    :example: news_by_topic(topic_name='Hidden impact on China's financial center', start_date='2022-03-30', end_date='2022-10-15')
+    :example: news_by_topic(topic_name='Hidden impact on China's financial center', start_date='2022-03-30', end_date='2023-05-03')
     
     :exception: ['ParameterInvalidError', 'ParameterMissingError', 'TopicIsMergedToAnotherTopicError']
     :param topic_name: A topic name. Note that we only accept topic names listed in the `topic_names` API.
