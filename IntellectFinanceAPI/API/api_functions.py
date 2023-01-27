@@ -28,7 +28,7 @@ def news_by_ticker(*ignore, ticker, start_date, end_date, stop_at_number_of_news
     :param ticker: The ticker.
     :param start_date: Start date (UTC) of the news range. Its format should be `YYYY-MM-DD`.
     :param end_date: End date (UTC) (including) of the news range. Its format should be `YYYY-MM-DD`.
-    :param stop_at_number_of_news: Optional. Max number of news to retrieve. Must be an integer between 1 and 1000. Default (if not provided) is 1000. It means we will only retrieve the top `stop_at_number_of_news` most latest news.
+    :param stop_at_number_of_news: Optional. Max number of news to retrieve. Must be an integer between 1 and 1000. Default (if not provided) is 1000. If `if_most_relevant_news_ind` is `False` (default), tt means we will only retrieve the latest `stop_at_number_of_news` number of pieces of news. If `if_most_relevant_news_ind` is `True`, it means we will only retrieve the top `stop_at_number_of_news` important news.
     :param if_dedupe_news_ind: Optional. Sometimes one similar news will be reported by several different news sources. For example, on 2022-12-08, CNBC, WSJ and Bloomberg all reported the news that "FTC Sues to Block Microsoft’s Acquisition of Activision Blizzard". This option will enable to dedupe such duplicated news (typically keep the earliest news). Default is `True`. You can also get ALL the news (including the duplicated ones) by providing `False`.
     :param if_most_relevant_news_ind: Optional. Pull relevant news only (Score of the relevance (`cos`) has to be equal or larger than 0.6 for the inputted ticker). Default is False.
     :return: {'result': `A list of news.`}
@@ -168,7 +168,7 @@ def sentiment_time_series_one_ticker(*ignore, ticker, start_date, end_date):
 
     :example: sentiment_time_series_one_ticker(ticker='AMZN', start_date='2021-06-30', end_date='2023-07-09')
     
-    :exception: ['ExceptionNoTickerFound', 'ParameterInvalidError', 'ParameterMissingError']
+    :exception: ['ParameterInvalidError', 'ParameterMissingError']
     :param ticker: A ticker.
     :param start_date: The start date (UTC) of the news.
     :param end_date: The end date (UTC) (including) of the news.
@@ -326,7 +326,7 @@ def search_company(*ignore, input):
     
     :exception: ['ParameterMissingError']
     :param input: A company's ticker, CIK or name (don't need to input the full name).
-    :return: {'result': `A list of company information, deduped by ['cik', 'sic', 'ticker', 'cleaned_name'].`}
+    :return: {'result': `A list of company that matched the input.`}
     """
     return send_http_request('search_company', input=input)
 
@@ -356,7 +356,7 @@ def list_sec_daily_filings(*ignore, date, cik=None, _NEXT_TOKEN_=None):
 def sec_raw_financial_data(*ignore, cik_or_ticker, year_quarter, statement_type): 
     """
     https://www.intellect.finance/API_Document#sec_raw_financial_data
-    Get the financial statement reported by a company in a given quarter. 
+    Get the raw financial statement reported by a company in a given quarter. 
     Our data contains not only the most common financial items such as `Sales`, or `Net Income`, 
     but also the financial items in certain dimensions. For example, for Apple (cik is 320193), we provide the `Nert sales` by 
     each `ProductOrServiceAxis`, 
@@ -372,6 +372,24 @@ def sec_raw_financial_data(*ignore, cik_or_ticker, year_quarter, statement_type)
     :return: {'result': `A list of items in the statement.`}
     """
     return send_http_request('sec_raw_financial_data', cik_or_ticker=cik_or_ticker, year_quarter=year_quarter, statement_type=statement_type)
+
+
+def sec_cleaned_financial_data(*ignore, cik_or_ticker, start_year_q, end_year_q, stmt=None, q_or_y=None): 
+    """
+    https://www.intellect.finance/API_Document#sec_cleaned_financial_data
+    Get the financial statement reported by a company in a given quarter. This API provides the essentially same data as the `sec_raw_financial_data` API, but this API 1) cleans up the raw data to make it presentable as a data.frame or in Excel, and 2) provides financial data for multiple quarters, rather than single quarter like the `sec_raw_financial_data` API.
+
+    :example: sec_cleaned_financial_data(cik_or_ticker=789019, start_year_q='2020Q1', end_year_q='2020Q4', stmt='BALANCE_SHEET', q_or_y='yearly')
+    
+    :exception: ['ParameterMissingError']
+    :param cik_or_ticker: CIK or ticker a company.
+    :param start_year_q: Starting calender (not fiscal) year and quarter. The format should be `2020Q1`.
+    :param end_year_q: Ending calender (not fiscal) year and quarter. The format should be `2020Q4`. The number of quarters between the `start_year_q` and `end_year_q` should be less than 20 if you decide to retrieve the yearly data (`q_or_y`=`y`), or 12 if you decide to retrieve the quarterly data (`q_or_y`=`q`).
+    :param stmt: Optional. Type of Statement of the company. A valid option should be one of ['BALANCE_SHEET', 'CASHFLOW', 'INCOME_STATEMENT']. Default is `BALANCE_SHEET`.
+    :param q_or_y: Optional. Get `quarterly` data or `yearly` data. Default is `yearly`.
+    :return: {'result': `Cleaned financial statement for multiple quarters. It is a hashmap (with key `df_main` for major financial items, and `df_children` for financial items in certain dimensions).`}
+    """
+    return send_http_request('sec_cleaned_financial_data', cik_or_ticker=cik_or_ticker, start_year_q=start_year_q, end_year_q=end_year_q, stmt=stmt, q_or_y=q_or_y)
 
 
 def sec_8k_6k(*ignore, cik_or_ticker, start_date, end_date): 
