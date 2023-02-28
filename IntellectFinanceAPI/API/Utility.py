@@ -1,8 +1,9 @@
 import copy
 import json
 import urllib.request
+import urllib.parse
 from urllib.error import HTTPError
-import logging
+import ssl
 
 from IntellectFinanceAPI.API.ErrorTypes import *
 
@@ -19,16 +20,46 @@ def set_api_key(apikey):
 
 
 def _call_url(url):
+    # As we are accessing the API with `https`, we have to provide an SSL context.
     try:
-        logging.info(f'Sending to API: {url}')
-        http_response = urllib.request.urlopen(url)
-    except HTTPError as e:
-        http_response = e  # contains informative error message.
-    result_dict = json.loads(http_response.read())  # `result_dict` is a dictionary
-    return result_dict
+        ssl_context = ssl.create_default_context()
+        ssl_context.check_hostname = False
+        ssl_context.verify_mode = ssl.CERT_NONE
+    except Exception:
+        ssl_context = None
+        
+    max_retry = 3
+    retry_times = 0
+    
+    error = None
+    
+    while retry_times <= max_retry:
+        retry_times += 1
+        try:
+            logging.info(f'Sending to API: {url}')
+            http_response = urllib.request.urlopen(url, context=ssl_context)
+            
+            result_dict = json.loads(http_response.read())  # `result_dict` is a dictionary
+            return result_dict
+        
+        except HTTPError as e:
+            http_response = e  # contains informative error message.
+            
+            result_dict = json.loads(http_response.read())  # `result_dict` is a dictionary
+            return result_dict
+        
+        except ConnectionResetError as e:
+            logger.debug(f'Retry `{url}` as there is an error: {e}')
+            error = e
+    
+    if error:
+        raise error
+    else:
+        raise NotImplementedError('Failed for unknown reason')
 
 
 def _generate_url(api_name, kargs):
+    
     url = f'https://www.intellect.finance/api/{api_name}?'
     
     if kargs:

@@ -28,8 +28,8 @@ def news_by_ticker(*ignore, ticker, start_date, end_date, stop_at_number_of_news
     :param ticker: The ticker.
     :param start_date: Start date (UTC) of the news range. Its format should be `YYYY-MM-DD`.
     :param end_date: End date (UTC) (including) of the news range. Its format should be `YYYY-MM-DD`.
-    :param stop_at_number_of_news: Optional. Max number of news to retrieve. Must be an integer between 1 and 1000. Default (if not provided) is 1000. If `if_most_relevant_news_ind` is `False` (default), tt means we will only retrieve the latest `stop_at_number_of_news` number of pieces of news. If `if_most_relevant_news_ind` is `True`, it means we will only retrieve the top `stop_at_number_of_news` important news.
-    :param if_dedupe_news_ind: Optional. Sometimes one similar news will be reported by several different news sources. For example, on 2022-12-08, CNBC, WSJ and Bloomberg all reported the news that "FTC Sues to Block Microsoft’s Acquisition of Activision Blizzard". This option will enable to dedupe such duplicated news (typically keep the earliest news). Default is `True`. You can also get ALL the news (including the duplicated ones) by providing `False`.
+    :param stop_at_number_of_news: Optional. Max number of news to retrieve. Must be an integer between 1 and 1000. Default (if not provided) is 1000. If `if_most_relevant_news_ind` is `False` (default), it means we will only retrieve the latest `stop_at_number_of_news` number of pieces of news. If `if_most_relevant_news_ind` is `True`, it means we will only retrieve the top `stop_at_number_of_news` important news.
+    :param if_dedupe_news_ind: Optional. Sometimes, similar news will be reported by several different news sources. For example, on 2022-12-08, CNBC, WSJ and Bloomberg all reported the news that "FTC Sues to Block Microsoft’s Acquisition of Activision Blizzard". This option will enable the API to dedupe such duplicated news (typically keep the earliest news). Default is `True`. You can also get ALL the news (including the duplicated ones) by providing `False`.
     :param if_most_relevant_news_ind: Optional. Pull relevant news only (Score of the relevance (`cos`) has to be equal or larger than 0.6 for the inputted ticker). Default is False.
     :return: {'result': `A list of news.`}
     """
@@ -44,12 +44,12 @@ def news_by_topic(*ignore, topic_name, start_date, end_date):
        "error_type": "TopicIsMergedToAnotherTopic", 
        "new_topic_name": "A_NEW_TOPIC_NAME", 
     }
-<br/>with HTTP code `301`. Thus, you can re-call this API with the new topic name showed in `A_NEW_TOPIC_NAME`. 
+<br/>with HTTP code `301`. Thus, you can re-call this API with the new topic name shown in `A_NEW_TOPIC_NAME`. 
 
     :example: news_by_topic(topic_name='Hidden impact on China's financial center', start_date='2022-03-30', end_date='2023-05-03')
     
     :exception: ['ParameterInvalidError', 'ParameterMissingError', 'TopicIsMergedToAnotherTopicError']
-    :param topic_name: A topic name. Note that we only accept topic names listed in the `topic_names` API.
+    :param topic_name: A topic name. Note that we only accept topic names that are listed in the `topic_names` API.
     :param start_date: The start date (UTC) of the news.
     :param end_date: The end date (UTC) (including) of the news.
     :return: {'result': `A list of news.`}
@@ -109,7 +109,7 @@ def relevant_tickers_by_topic(*ignore, topic_name, year):
        "error_type": "TopicIsMergedToAnotherTopic", 
        "new_topic_name": "A_NEW_TOPIC_NAME", 
     }
-<br/>with HTTP code `301`. Thus, you can re-call this API with the new topic name showed in `A_NEW_TOPIC_NAME`. 
+<br/>with HTTP code `301`. Thus, you can re-call this API with the new topic name shown in `A_NEW_TOPIC_NAME`. 
 
     :example: relevant_tickers_by_topic(topic_name='Hidden impact on China's financial center', year='2021')
     
@@ -148,12 +148,12 @@ def sentiment_time_series_one_topic(*ignore, topic_name, start_date, end_date):
        "error_type": "TopicIsMergedToAnotherTopic", 
        "new_topic_name": "A_NEW_TOPIC_NAME", 
     }
-<br/>with HTTP code `301`. Thus, you can re-call this API with the new topic name showed in `A_NEW_TOPIC_NAME`. 
+<br/>with HTTP code `301`. Thus, you can re-call this API with the new topic name shown in `A_NEW_TOPIC_NAME`. 
 
     :example: sentiment_time_series_one_topic(topic_name='Hidden impact on China's financial center', start_date='2022-03-30', end_date='2024-04-07')
     
     :exception: ['CannotFindTopicNameError', 'ParameterInvalidError', 'ParameterMissingError', 'TopicIsMergedToAnotherTopicError']
-    :param topic_name: A topic name. Note that we only accept topic names listed in the `topic_names` API.
+    :param topic_name: A topic name. Note that we only accept topic names that are listed in the `topic_names` API.
     :param start_date: The start date (UTC) of the news.
     :param end_date: The end date (UTC) (including) of the news.
     :return: {'result': `A list of sentiment scores (with number of news), ordered by date.`}
@@ -180,7 +180,7 @@ def sentiment_time_series_one_ticker(*ignore, ticker, start_date, end_date):
 def annualized_sharpe_ratio_by_ticker(*ignore, ticker, start_date, end_date, risk_free_rate, smart_sharpe_flag=None): 
     """
     https://www.intellect.finance/API_Document#annualized_sharpe_ratio_by_ticker
-    Calculate the annualized Sharpe Ratio for a ticker in a given period (should be less 370 days).
+    Calculate the annualized Sharpe Ratio for a ticker in a given period (should be less than 370 days).
 
     :example: annualized_sharpe_ratio_by_ticker(ticker='MSFT', start_date='2021-01-01', end_date='2021-12-31', risk_free_rate=0.02, smart_sharpe_flag='false')
     
@@ -198,7 +198,7 @@ def annualized_sharpe_ratio_by_ticker(*ignore, ticker, start_date, end_date, ris
 def max_drawdown_by_ticker(*ignore, ticker, start_date, end_date): 
     """
     https://www.intellect.finance/API_Document#max_drawdown_by_ticker
-    Calculate the maximum drawdown (MDD) for a ticker in a given period (should be less 370 days).
+    Calculate the maximum drawdown (MDD) for a ticker in a given period (should be less than 370 days).
 
     :example: max_drawdown_by_ticker(ticker='MSFT', start_date='2021-01-01', end_date='2021-12-31')
     
@@ -320,7 +320,7 @@ def company_info_by_ticker(*ignore, ticker):
 def search_company(*ignore, input): 
     """
     https://www.intellect.finance/API_Document#search_company
-    Get company information by searching a company's ticker, CIK or name. This API supports the auto-complete functionality (powered by Elasticsearch). Auto-completion means that you don't need to input the full name of the company. For example, just input `starb`, we will return `Starbucks`. Note that We will return at most 20 items in this search API. 
+    Get company information by searching a company's ticker, CIK or name. This API supports the auto-complete functionality (powered by Elasticsearch). Auto-completion means that you don't need to input the full name of the company. For example, just input `starb`, and we will return `Starbucks`. Note that we will return at most 20 items in this search API. 
 
     :example: search_company(input='Starb')
     
@@ -335,18 +335,18 @@ def list_sec_daily_filings(*ignore, date, cik=None, _NEXT_TOKEN_=None):
     """
     https://www.intellect.finance/API_Document#list_sec_daily_filings
     Get the list of all filings reported to SEC on a certain date. 
-    Usually this date is the filling date of the all the filings included. 
+    Usually this date is the filling date of all the filings included. 
     In some rare cases, SEC will also include filings from previous days. 
     For each API call, we will return a max number of 500 entries. 
     If there are more than 500 filings in one day, 
     we will return a `_NEXT_TOKEN_` value, 
-    and you can pass this value through the `_NEXT_TOKEN_` parameter in the API URL to continue retrieval more data.
+    and you can pass this value through the `_NEXT_TOKEN_` parameter in the API URL to continue to retrieve more data.
 
     :example: list_sec_daily_filings(date='2022-02-01', cik='1652044', _NEXT_TOKEN_=500)
     
     :exception: ['ParameterInvalidError', 'ParameterMissingError']
     :param date: Date that SEC indexed the filings. Usually this date is the filling date.
-    :param cik: Optional. If you only know the ticker of a company (say AAPL), you can get the corresponding CIK of that company can be retrieved through the `company_info_by_ticker` API.
+    :param cik: Optional. If you only know the ticker of a company (say AAPL), the corresponding CIK of that company can be retrieved through the `company_info_by_ticker` API.
     :param _NEXT_TOKEN_: Optional. Next token, used to continue to retrieve more data. If not provided, we will retrieve the data from the beginning.
     :return: {'result': `A list of filings.`}
     """
@@ -381,10 +381,10 @@ def sec_cleaned_financial_data(*ignore, cik_or_ticker, start_year_q, end_year_q,
 
     :example: sec_cleaned_financial_data(cik_or_ticker=789019, start_year_q='2020Q1', end_year_q='2020Q4', stmt='BALANCE_SHEET', q_or_y='yearly')
     
-    :exception: ['ParameterMissingError']
+    :exception: ['ExceptionNoCIK', 'ExceptionNoData', 'ParameterMissingError']
     :param cik_or_ticker: CIK or ticker a company.
-    :param start_year_q: Starting calender (not fiscal) year and quarter. The format should be `2020Q1`.
-    :param end_year_q: Ending calender (not fiscal) year and quarter. The format should be `2020Q4`. The number of quarters between the `start_year_q` and `end_year_q` should be less than 20 if you decide to retrieve the yearly data (`q_or_y`=`y`), or 12 if you decide to retrieve the quarterly data (`q_or_y`=`q`).
+    :param start_year_q: Starting calendar (not fiscal) year and quarter. The format should be `2020Q1`.
+    :param end_year_q: Ending calendar (not fiscal) year and quarter. The format should be `2020Q4`. The number of quarters between the `start_year_q` and `end_year_q` should be less than 20 if you decide to retrieve the yearly data (`q_or_y`=`y`), or 12 if you decide to retrieve the quarterly data (`q_or_y`=`q`).
     :param stmt: Optional. Type of Statement of the company. A valid option should be one of ['BALANCE_SHEET', 'CASHFLOW', 'INCOME_STATEMENT']. Default is `BALANCE_SHEET`.
     :param q_or_y: Optional. Get `quarterly` data or `yearly` data. Default is `yearly`.
     :return: {'result': `Cleaned financial statement for multiple quarters. It is a hashmap (with key `df_main` for major financial items, and `df_children` for financial items in certain dimensions).`}
