@@ -374,22 +374,21 @@ def sec_raw_financial_data(*ignore, cik_or_ticker, year_quarter, statement_type)
     return send_http_request('sec_raw_financial_data', cik_or_ticker=cik_or_ticker, year_quarter=year_quarter, statement_type=statement_type)
 
 
-def sec_cleaned_financial_data(*ignore, cik_or_ticker, start_year_q, end_year_q, stmt=None, q_or_y=None): 
+def sec_cleaned_financial_data(*ignore, cik_or_ticker, stmt=None, q_or_y=None, end_year_q=None): 
     """
     https://www.intellect.finance/API_Document#sec_cleaned_financial_data
     Get the financial statement reported by a company in a given quarter. This API provides the essentially same data as the `sec_raw_financial_data` API, but this API 1) cleans up the raw data to make it presentable as a data.frame or in Excel, and 2) provides financial data for multiple quarters, rather than single quarter like the `sec_raw_financial_data` API.
 
-    :example: sec_cleaned_financial_data(cik_or_ticker=789019, start_year_q='2020Q1', end_year_q='2020Q4', stmt='BALANCE_SHEET', q_or_y='yearly')
+    :example: sec_cleaned_financial_data(cik_or_ticker=789019, stmt='BALANCE_SHEET', q_or_y='ttm', end_year_q='2022Q4')
     
     :exception: ['ExceptionNoCIK', 'ExceptionNoData', 'ParameterMissingError']
     :param cik_or_ticker: CIK or ticker a company.
-    :param start_year_q: Starting calendar (not fiscal) year and quarter. The format should be `2020Q1`.
-    :param end_year_q: Ending calendar (not fiscal) year and quarter. The format should be `2020Q4`. The number of quarters between the `start_year_q` and `end_year_q` should be less than 20 if you decide to retrieve the yearly data (`q_or_y`=`y`), or 12 if you decide to retrieve the quarterly data (`q_or_y`=`q`).
     :param stmt: Optional. Type of Statement of the company. A valid option should be one of ['BALANCE_SHEET', 'CASHFLOW', 'INCOME_STATEMENT']. Default is `BALANCE_SHEET`.
-    :param q_or_y: Optional. Get `quarterly` data or `yearly` data. Default is `yearly`.
-    :return: {'result': `Cleaned financial statement for multiple quarters. It is a hashmap (with key `df_main` for major financial items, and `df_children` for financial items in certain dimensions).`}
+    :param q_or_y: Optional. Get `quarterly` or `ttm` (trailing 12 months) data. Default is `ttm`.
+    :param end_year_q: Optional. Ending calendar (not fiscal) year and quarter. The format should be like `2020Q4`, or `LATEST`. Default is `LATEST`, which means we will just return the latest available data.
+    :return: {'result': `Cleaned financial statement for 8 quarters (if `q_or_y`) is `q`), or 5 years (if `q_or_y` is `ttm` or `yearly`). It is a hashmap (with key `df_main` for major financial items, and `df_children` for financial items in certain dimensions).`}
     """
-    return send_http_request('sec_cleaned_financial_data', cik_or_ticker=cik_or_ticker, start_year_q=start_year_q, end_year_q=end_year_q, stmt=stmt, q_or_y=q_or_y)
+    return send_http_request('sec_cleaned_financial_data', cik_or_ticker=cik_or_ticker, stmt=stmt, q_or_y=q_or_y, end_year_q=end_year_q)
 
 
 def sec_8k_6k(*ignore, cik_or_ticker, start_date, end_date): 
