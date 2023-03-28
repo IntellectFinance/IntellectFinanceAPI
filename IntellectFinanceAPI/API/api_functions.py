@@ -463,3 +463,19 @@ def sec_345(*ignore, cik_or_ticker, start_date, end_date):
     :return: {'result': `A list of filings.`}
     """
     return send_http_request('sec_345', cik_or_ticker=cik_or_ticker, start_date=start_date, end_date=end_date)
+
+
+def fundamental_metrics(*ignore, cik_or_ticker, metric_name, historical_or_latest=None): 
+    """
+    https://www.intellect.finance/API_Document#fundamental_metrics
+    Get fundamental metrics (such as P/E and P/S ratios) by quarter.
+
+    :example: fundamental_metrics(cik_or_ticker=789019, metric_name='PE', historical_or_latest='LATEST')
+    
+    :exception: ['ParameterMissingError']
+    :param cik_or_ticker: CIK or ticker a company.
+    :param metric_name: Metric name. Must be one of ['Outstanding-Shares', 'Market-Cap', 'PE-Diluted', 'PS', 'PE', 'Gross-Margin', 'Operating-Margin', 'Net-Margin', 'Tangible-Book-Value', 'Price-to-Tangible-Book-Value', 'FCF', 'Price-to-FCF-Ratio', 'PEG-Ratio', 'EBIT', 'EBITDA', 'Interest-Coverage', 'Current-Ratio', 'Quick-Ratio'].
+    :param historical_or_latest: Optional. Choose to retrieve either the value for the latest quarter (`LATEST`), or the historical values (`HISTORICAL`) for the last 4.0 years. Note that some metrics, such as PE, requires the stock price information. For `LATEST`, we use the latest stock price. For `HISTORICAL`, for each quarter, we use the volume-weighted average end-of-day stock price one month after the fiscal quarter ends. For example, if the fiscal quarter ends at 12/31/2022, then we will use the stock price from 02/01/2023 - 02/28/2023.
+    :return: {'result': `List of fundamental metrics.`}
+    """
+    return send_http_request('fundamental_metrics', cik_or_ticker=cik_or_ticker, metric_name=metric_name, historical_or_latest=historical_or_latest)
