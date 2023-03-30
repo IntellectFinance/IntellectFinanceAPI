@@ -28,9 +28,9 @@ def news_by_ticker(*ignore, ticker, start_date, end_date, stop_at_number_of_news
     :param ticker: The ticker.
     :param start_date: Start date (UTC) of the news range. Its format should be `YYYY-MM-DD`.
     :param end_date: End date (UTC) (including) of the news range. Its format should be `YYYY-MM-DD`.
-    :param stop_at_number_of_news: Optional. Max number of news to retrieve. Must be an integer between 1 and 1000. Default (if not provided) is 1000. If `if_most_relevant_news_ind` is `False` (default), it means we will only retrieve the latest `stop_at_number_of_news` number of pieces of news. If `if_most_relevant_news_ind` is `True`, it means we will only retrieve the top `stop_at_number_of_news` important news.
-    :param if_dedupe_news_ind: Optional. Sometimes, similar news will be reported by several different news sources. For example, on 2022-12-08, CNBC, WSJ and Bloomberg all reported the news that "FTC Sues to Block Microsoft’s Acquisition of Activision Blizzard". This option will enable the API to dedupe such duplicated news (typically keep the earliest news). Default is `True`. You can also get ALL the news (including the duplicated ones) by providing `False`.
-    :param if_most_relevant_news_ind: Optional. Pull relevant news only (Score of the relevance (`cos`) has to be equal or larger than 0.6 for the inputted ticker). Default is False.
+    :param stop_at_number_of_news: Optional (default value is `1000`). Max number of news to retrieve. Must be an integer between 1 and 1000. Default (if not provided) is 1000. If `if_most_relevant_news_ind` is `False` (default), it means we will only retrieve the latest `stop_at_number_of_news` number of pieces of news. If `if_most_relevant_news_ind` is `True`, it means we will only retrieve the top `stop_at_number_of_news` important news.
+    :param if_dedupe_news_ind: Optional (default value is `True`). Sometimes, similar news will be reported by several different news sources. For example, on 2022-12-08, CNBC, WSJ and Bloomberg all reported the news that "FTC Sues to Block Microsoft’s Acquisition of Activision Blizzard". This option will enable the API to dedupe such duplicated news (typically keep the earliest news). Default is `True`. You can also get ALL the news (including the duplicated ones) by providing `False`.
+    :param if_most_relevant_news_ind: Optional (default value is `False`). Pull relevant news only (Score of the relevance (`cos`) has to be equal or larger than 0.6 for the inputted ticker). Default is False.
     :return: {'result': `A list of news.`}
     """
     return send_http_request('news_by_ticker', ticker=ticker, start_date=start_date, end_date=end_date, stop_at_number_of_news=stop_at_number_of_news, if_dedupe_news_ind=if_dedupe_news_ind, if_most_relevant_news_ind=if_most_relevant_news_ind)
@@ -57,19 +57,19 @@ def news_by_topic(*ignore, topic_name, start_date, end_date):
     return send_http_request('news_by_topic', topic_name=topic_name, start_date=start_date, end_date=end_date)
 
 
-def list_tickers_with_news(*ignore, min_number_news_per_ticker, year=None): 
+def list_tickers_with_news(*ignore, year=None, min_number_news_per_ticker=None): 
     """
     https://www.intellect.finance/API_Document#list_tickers_with_news
     Get a list of tickers and their number of news, sorted by the number of news in descending order.
 
-    :example: list_tickers_with_news(min_number_news_per_ticker=10, year='2022')
+    :example: list_tickers_with_news(year='2022', min_number_news_per_ticker=10)
     
     :exception: ['ParameterInvalidError', 'ParameterMissingError']
-    :param min_number_news_per_ticker: Used to exclude the tickers with number of news less than the `min_number_news_per_ticker`. Default value is 10.
-    :param year: Optional. Filter the year of news. If not provided, we will pull data for the current year and the previous year.
+    :param year: Optional (default value is `EMPTY`). Filter the year of news. If not provided, we will pull data for the current year and the previous year.
+    :param min_number_news_per_ticker: Optional (default value is `10`). Used to exclude the tickers with number of news less than the `min_number_news_per_ticker`. Default value is 10.
     :return: {'result': `A list of hashmaps.`}
     """
-    return send_http_request('list_tickers_with_news', min_number_news_per_ticker=min_number_news_per_ticker, year=year)
+    return send_http_request('list_tickers_with_news', year=year, min_number_news_per_ticker=min_number_news_per_ticker)
 
 
 def relevance_score_between_two_tickers(*ignore, ticker_1, ticker_2): 
@@ -134,7 +134,7 @@ def topic_names(*ignore, start_date, end_date, topic_name=None):
     :exception: ['ParameterInvalidError', 'ParameterMissingError']
     :param start_date: Start date (UTC) of the news range. Its format should be `YYYY-MM-DD`.
     :param end_date: End date (UTC) (including) of the news range. Its format should be `YYYY-MM-DD`. The data range between start date to end date shall not be more than 31 days.
-    :param topic_name: Optional. If you already know which topic's information you want to get, you can directly provide a topic name as a filter. This can save your credits and reduce the latency of this API.
+    :param topic_name: Optional (default value is `EMPTY`). If you already know which topic's information you want to get, you can directly provide a topic name as a filter. This can save your credits and reduce the latency of this API.
     :return: {'result': `A hashmap of topics. Key is the topic name, and value is the information about the topic.`}
     """
     return send_http_request('topic_names', start_date=start_date, end_date=end_date, topic_name=topic_name)
@@ -189,7 +189,7 @@ def annualized_sharpe_ratio_by_ticker(*ignore, ticker, start_date, end_date, ris
     :param start_date: Start date. Its format should be `YYYY-MM-DD`.
     :param end_date: End date (including). Its format should be `YYYY-MM-DD`. The max time range between `start_date` and `end_date` has to be less than 370 days.
     :param risk_free_rate: Risk-free rate of interest (expressed in annualized term).
-    :param smart_sharpe_flag: Optional. A boolean flag (`false` or `true`) indicating whether a Smart Sharpe ratio is returned. Default is `false`.
+    :param smart_sharpe_flag: Optional (default value is `false`). A boolean flag (`false` or `true`) indicating whether a Smart Sharpe ratio is returned. Default is `false`.
     :return: {'result': `The Sharpe ratio in annualized term (round to 3 decimal places).`}
     """
     return send_http_request('annualized_sharpe_ratio_by_ticker', ticker=ticker, start_date=start_date, end_date=end_date, risk_free_rate=risk_free_rate, smart_sharpe_flag=smart_sharpe_flag)
@@ -331,28 +331,6 @@ def search_company(*ignore, input):
     return send_http_request('search_company', input=input)
 
 
-def list_sec_daily_filings(*ignore, date, cik=None, _NEXT_TOKEN_=None): 
-    """
-    https://www.intellect.finance/API_Document#list_sec_daily_filings
-    Get the list of all filings reported to SEC on a certain date. 
-    Usually this date is the filling date of all the filings included. 
-    In some rare cases, SEC will also include filings from previous days. 
-    For each API call, we will return a max number of 500 entries. 
-    If there are more than 500 filings in one day, 
-    we will return a `_NEXT_TOKEN_` value, 
-    and you can pass this value through the `_NEXT_TOKEN_` parameter in the API URL to continue to retrieve more data.
-
-    :example: list_sec_daily_filings(date='2022-02-01', cik='1652044', _NEXT_TOKEN_=500)
-    
-    :exception: ['ParameterInvalidError', 'ParameterMissingError']
-    :param date: Date that SEC indexed the filings. Usually this date is the filling date.
-    :param cik: Optional. If you only know the ticker of a company (say AAPL), the corresponding CIK of that company can be retrieved through the `company_info_by_ticker` API.
-    :param _NEXT_TOKEN_: Optional. Next token, used to continue to retrieve more data. If not provided, we will retrieve the data from the beginning.
-    :return: {'result': `A list of filings.`}
-    """
-    return send_http_request('list_sec_daily_filings', date=date, cik=cik, _NEXT_TOKEN_=_NEXT_TOKEN_)
-
-
 def sec_raw_financial_data(*ignore, cik_or_ticker, year_quarter, statement_type): 
     """
     https://www.intellect.finance/API_Document#sec_raw_financial_data
@@ -379,16 +357,54 @@ def sec_cleaned_financial_data(*ignore, cik_or_ticker, stmt=None, q_or_y=None, e
     https://www.intellect.finance/API_Document#sec_cleaned_financial_data
     Get the financial statement reported by a company in a given quarter. This API provides the essentially same data as the `sec_raw_financial_data` API, but this API 1) cleans up the raw data to make it presentable as a data.frame or in Excel, and 2) provides financial data for multiple quarters, rather than single quarter like the `sec_raw_financial_data` API.
 
-    :example: sec_cleaned_financial_data(cik_or_ticker=789019, stmt='BALANCE_SHEET', q_or_y='ttm', end_year_q='2022Q4')
+    :example: sec_cleaned_financial_data(cik_or_ticker=789019, stmt='INCOME_STATEMENT', q_or_y='ttm', end_year_q='2022Q4')
     
     :exception: ['ExceptionNoCIK', 'ExceptionNoData', 'ParameterMissingError']
     :param cik_or_ticker: CIK or ticker a company.
-    :param stmt: Optional. Type of Statement of the company. A valid option should be one of ['BALANCE_SHEET', 'CASHFLOW', 'INCOME_STATEMENT']. Default is `BALANCE_SHEET`.
-    :param q_or_y: Optional. Get `quarterly` or `ttm` (trailing 12 months) data. Default is `ttm`.
-    :param end_year_q: Optional. Ending calendar (not fiscal) year and quarter. The format should be like `2020Q4`, or `LATEST`. Default is `LATEST`, which means we will just return the latest available data.
+    :param stmt: Optional (default value is `INCOME_STATEMENT`). Type of Statement of the company. A valid option should be one of ['BALANCE_SHEET', 'CASHFLOW', 'INCOME_STATEMENT']. Default is `INCOME_STATEMENT`.
+    :param q_or_y: Optional (default value is `ttm`). Get `quarterly` or `ttm` (trailing 12 months) data. Default is `ttm`.
+    :param end_year_q: Optional (default value is `LATEST`). Ending calendar (not fiscal) year and quarter. The format should be like `2020Q4`, or `LATEST`. Default is `LATEST`, which means we will just return the latest available data.
     :return: {'result': `Cleaned financial statement for 8 quarters (if `q_or_y`) is `q`), or 5 years (if `q_or_y` is `ttm` or `yearly`). It is a hashmap (with key `df_main` for major financial items, and `df_children` for financial items in certain dimensions).`}
     """
     return send_http_request('sec_cleaned_financial_data', cik_or_ticker=cik_or_ticker, stmt=stmt, q_or_y=q_or_y, end_year_q=end_year_q)
+
+
+def fundamental_metrics(*ignore, cik_or_ticker, metric_name, historical_or_latest=None): 
+    """
+    https://www.intellect.finance/API_Document#fundamental_metrics
+    Get fundamental metrics (such as P/E and P/S ratios) by quarter.
+
+    :example: fundamental_metrics(cik_or_ticker=789019, metric_name='PE', historical_or_latest='LATEST')
+    
+    :exception: ['ParameterMissingError']
+    :param cik_or_ticker: CIK or ticker a company.
+    :param metric_name: Metric name. Must be one of ['Outstanding-Shares', 'Market-Cap', 'PE-Diluted', 'PS', 'PE', 'Gross-Margin', 'Operating-Margin', 'Net-Margin', 'Tangible-Book-Value', 'Price-to-Tangible-Book-Value', 'FCF', 'Price-to-FCF-Ratio', 'PEG-Ratio', 'EBIT', 'EBITDA', 'Interest-Coverage', 'Current-Ratio', 'Quick-Ratio'].
+    :param historical_or_latest: Optional (default value is `LATEST`). Choose to retrieve either the value for the latest quarter (`LATEST`), or the historical values (`HISTORICAL`) for the last 4.0 years. Note that some metrics, such as PE, requires the stock price information. For `LATEST`, we use the latest stock price. For `HISTORICAL`, for each quarter, we use the volume-weighted average end-of-day stock price one month after the fiscal quarter ends. For example, if the fiscal quarter ends at 12/31/2022, then we will use the stock price from 02/01/2023 - 02/28/2023.
+    :return: {'result': `List of fundamental metrics.`}
+    """
+    return send_http_request('fundamental_metrics', cik_or_ticker=cik_or_ticker, metric_name=metric_name, historical_or_latest=historical_or_latest)
+
+
+def list_sec_daily_filings(*ignore, date, cik=None, _NEXT_TOKEN_=None): 
+    """
+    https://www.intellect.finance/API_Document#list_sec_daily_filings
+    Get the list of all filings reported to SEC on a certain date. 
+    Usually this date is the filling date of all the filings included. 
+    In some rare cases, SEC will also include filings from previous days. 
+    For each API call, we will return a max number of 500 entries. 
+    If there are more than 500 filings in one day, 
+    we will return a `_NEXT_TOKEN_` value, 
+    and you can pass this value through the `_NEXT_TOKEN_` parameter in the API URL to continue to retrieve more data.
+
+    :example: list_sec_daily_filings(date='2022-02-01', cik='1652044', _NEXT_TOKEN_=500)
+    
+    :exception: ['ParameterInvalidError', 'ParameterMissingError']
+    :param date: Date that SEC indexed the filings. Usually this date is the filling date.
+    :param cik: Optional (default value is `EMPTY`). If you only know the ticker of a company (say AAPL), the corresponding CIK of that company can be retrieved through the `company_info_by_ticker` API.
+    :param _NEXT_TOKEN_: Optional (default value is `None`). Next token, used to continue to retrieve more data. If not provided, we will retrieve the data from the beginning.
+    :return: {'result': `A list of filings.`}
+    """
+    return send_http_request('list_sec_daily_filings', date=date, cik=cik, _NEXT_TOKEN_=_NEXT_TOKEN_)
 
 
 def sec_8k_6k(*ignore, cik_or_ticker, start_date, end_date): 
@@ -463,19 +479,3 @@ def sec_345(*ignore, cik_or_ticker, start_date, end_date):
     :return: {'result': `A list of filings.`}
     """
     return send_http_request('sec_345', cik_or_ticker=cik_or_ticker, start_date=start_date, end_date=end_date)
-
-
-def fundamental_metrics(*ignore, cik_or_ticker, metric_name, historical_or_latest=None): 
-    """
-    https://www.intellect.finance/API_Document#fundamental_metrics
-    Get fundamental metrics (such as P/E and P/S ratios) by quarter.
-
-    :example: fundamental_metrics(cik_or_ticker=789019, metric_name='PE', historical_or_latest='LATEST')
-    
-    :exception: ['ParameterMissingError']
-    :param cik_or_ticker: CIK or ticker a company.
-    :param metric_name: Metric name. Must be one of ['Outstanding-Shares', 'Market-Cap', 'PE-Diluted', 'PS', 'PE', 'Gross-Margin', 'Operating-Margin', 'Net-Margin', 'Tangible-Book-Value', 'Price-to-Tangible-Book-Value', 'FCF', 'Price-to-FCF-Ratio', 'PEG-Ratio', 'EBIT', 'EBITDA', 'Interest-Coverage', 'Current-Ratio', 'Quick-Ratio'].
-    :param historical_or_latest: Optional. Choose to retrieve either the value for the latest quarter (`LATEST`), or the historical values (`HISTORICAL`) for the last 4.0 years. Note that some metrics, such as PE, requires the stock price information. For `LATEST`, we use the latest stock price. For `HISTORICAL`, for each quarter, we use the volume-weighted average end-of-day stock price one month after the fiscal quarter ends. For example, if the fiscal quarter ends at 12/31/2022, then we will use the stock price from 02/01/2023 - 02/28/2023.
-    :return: {'result': `List of fundamental metrics.`}
-    """
-    return send_http_request('fundamental_metrics', cik_or_ticker=cik_or_ticker, metric_name=metric_name, historical_or_latest=historical_or_latest)
