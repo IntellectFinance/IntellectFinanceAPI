@@ -8,8 +8,10 @@ class APIError(Exception):
     """Base class for exceptions in this module."""
     STATUS_CODE = 400
     
-    ADD_ADDITIONAL_ERROR_INFO = {}
-    
+    def __init__(self, *args: object):
+        super().__init__(args)
+        self.ADD_ADDITIONAL_ERROR_INFO = {}
+        
     def set_additional_error_info(self, key, value):
         self.ADD_ADDITIONAL_ERROR_INFO[key] = value
     

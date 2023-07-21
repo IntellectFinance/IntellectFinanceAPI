@@ -1,7 +1,7 @@
 from IntellectFinanceAPI.API.Utility import send_http_request
 
 
-def news_by_source(*ignore, news_source, start_time, end_time): 
+def news_by_source(news_source, start_time, end_time): 
     """
     https://www.intellect.finance/API_Document#news_by_source
     Get a list of news by the news source (i.e. WSJ, Bloomberg, or CNBC, etc). The max time range shall be less than 70 hours.
@@ -17,7 +17,7 @@ def news_by_source(*ignore, news_source, start_time, end_time):
     return send_http_request('news_by_source', news_source=news_source, start_time=start_time, end_time=end_time)
 
 
-def news_by_ticker(*ignore, ticker, start_date, end_date, stop_at_number_of_news=None, if_dedupe_news_ind=None, if_most_relevant_news_ind=None): 
+def news_by_ticker(ticker, start_date, end_date, stop_at_number_of_news=None, if_dedupe_news_ind=None, if_most_relevant_news_ind=None): 
     """
     https://www.intellect.finance/API_Document#news_by_ticker
     Get a list of news that is relevant to a company. The list will be sorted by the news' publish time (descending, which means later news will be on top of the list). Maximum number of news to retrieve is 1000.
@@ -36,7 +36,7 @@ def news_by_ticker(*ignore, ticker, start_date, end_date, stop_at_number_of_news
     return send_http_request('news_by_ticker', ticker=ticker, start_date=start_date, end_date=end_date, stop_at_number_of_news=stop_at_number_of_news, if_dedupe_news_ind=if_dedupe_news_ind, if_most_relevant_news_ind=if_most_relevant_news_ind)
 
 
-def news_by_topic(*ignore, topic_name, start_date, end_date): 
+def news_by_topic(topic_name, start_date, end_date): 
     """
     https://www.intellect.finance/API_Document#news_by_topic
     Get list of news under one topic within a certain date range (cannot be more than 400 days). In case the topic you provide is merged with a new topic, we will return an JSON response 
@@ -57,7 +57,7 @@ def news_by_topic(*ignore, topic_name, start_date, end_date):
     return send_http_request('news_by_topic', topic_name=topic_name, start_date=start_date, end_date=end_date)
 
 
-def list_tickers_with_news(*ignore, year=None, min_number_news_per_ticker=None): 
+def list_tickers_with_news(year=None, min_number_news_per_ticker=None): 
     """
     https://www.intellect.finance/API_Document#list_tickers_with_news
     Get a list of tickers and their number of news, sorted by the number of news in descending order.
@@ -72,7 +72,7 @@ def list_tickers_with_news(*ignore, year=None, min_number_news_per_ticker=None):
     return send_http_request('list_tickers_with_news', year=year, min_number_news_per_ticker=min_number_news_per_ticker)
 
 
-def relevance_score_between_two_tickers(*ignore, ticker_1, ticker_2): 
+def relevance_score_between_two_tickers(ticker_1, ticker_2): 
     """
     https://www.intellect.finance/API_Document#relevance_score_between_two_tickers
     Get the relevance score between two tickers. The score measures the similarity of the two tickers/companies. Note that the relevance score may change every day as we receive new information (i.e. new events, or news) about each ticker.
@@ -87,7 +87,7 @@ def relevance_score_between_two_tickers(*ignore, ticker_1, ticker_2):
     return send_http_request('relevance_score_between_two_tickers', ticker_1=ticker_1, ticker_2=ticker_2)
 
 
-def relevant_tickers_by_ticker(*ignore, ticker): 
+def relevant_tickers_by_ticker(ticker): 
     """
     https://www.intellect.finance/API_Document#relevant_tickers_by_ticker
     Get a list of the most relevant tickers to the input ticker. The more frequent that ticker A and B appear in the same news, then the more relevant these two tickers are.
@@ -101,7 +101,7 @@ def relevant_tickers_by_ticker(*ignore, ticker):
     return send_http_request('relevant_tickers_by_ticker', ticker=ticker)
 
 
-def relevant_tickers_by_topic(*ignore, topic_name, year): 
+def relevant_tickers_by_topic(topic_name, year): 
     """
     https://www.intellect.finance/API_Document#relevant_tickers_by_topic
     Get the most relevant tickers under one topic, and the degree of the relevance of those tickers to that topic. In case the topic you provide is merged with a new topic, we will return an JSON response 
@@ -121,7 +121,7 @@ def relevant_tickers_by_topic(*ignore, topic_name, year):
     return send_http_request('relevant_tickers_by_topic', topic_name=topic_name, year=year)
 
 
-def topic_names(*ignore, start_date, end_date, topic_name=None): 
+def topic_names(start_date, end_date, topic_name=None): 
     """
     https://www.intellect.finance/API_Document#topic_names
     Get a list of topic names within a date range (has to be less or equal than 400 days). 
@@ -140,7 +140,7 @@ def topic_names(*ignore, start_date, end_date, topic_name=None):
     return send_http_request('topic_names', start_date=start_date, end_date=end_date, topic_name=topic_name)
 
 
-def sentiment_time_series_one_topic(*ignore, topic_name, start_date, end_date): 
+def sentiment_time_series_one_topic(topic_name, start_date, end_date): 
     """
     https://www.intellect.finance/API_Document#sentiment_time_series_one_topic
     Get a time series of sentiment scores for a topic (the time range cannot be more than 740 days). In case the topic you provide is merged with a new topic, we will return an JSON response 
@@ -161,7 +161,7 @@ def sentiment_time_series_one_topic(*ignore, topic_name, start_date, end_date):
     return send_http_request('sentiment_time_series_one_topic', topic_name=topic_name, start_date=start_date, end_date=end_date)
 
 
-def sentiment_time_series_one_ticker(*ignore, ticker, start_date, end_date): 
+def sentiment_time_series_one_ticker(ticker, start_date, end_date): 
     """
     https://www.intellect.finance/API_Document#sentiment_time_series_one_ticker
     Get a time series of sentiment scores for a ticker (the time range cannot be more than 740 days). 
@@ -177,7 +177,7 @@ def sentiment_time_series_one_ticker(*ignore, ticker, start_date, end_date):
     return send_http_request('sentiment_time_series_one_ticker', ticker=ticker, start_date=start_date, end_date=end_date)
 
 
-def annualized_sharpe_ratio_by_ticker(*ignore, ticker, start_date, end_date, risk_free_rate, smart_sharpe_flag=None): 
+def annualized_sharpe_ratio_by_ticker(ticker, start_date, end_date, risk_free_rate, smart_sharpe_flag=None): 
     """
     https://www.intellect.finance/API_Document#annualized_sharpe_ratio_by_ticker
     Calculate the annualized Sharpe Ratio for a ticker in a given period (should be less than 370 days).
@@ -195,7 +195,7 @@ def annualized_sharpe_ratio_by_ticker(*ignore, ticker, start_date, end_date, ris
     return send_http_request('annualized_sharpe_ratio_by_ticker', ticker=ticker, start_date=start_date, end_date=end_date, risk_free_rate=risk_free_rate, smart_sharpe_flag=smart_sharpe_flag)
 
 
-def max_drawdown_by_ticker(*ignore, ticker, start_date, end_date): 
+def max_drawdown_by_ticker(ticker, start_date, end_date): 
     """
     https://www.intellect.finance/API_Document#max_drawdown_by_ticker
     Calculate the maximum drawdown (MDD) for a ticker in a given period (should be less than 370 days).
@@ -211,7 +211,7 @@ def max_drawdown_by_ticker(*ignore, ticker, start_date, end_date):
     return send_http_request('max_drawdown_by_ticker', ticker=ticker, start_date=start_date, end_date=end_date)
 
 
-def treasury_yield(*ignore, duration, start_date, end_date): 
+def treasury_yield(duration, start_date, end_date): 
     """
     https://www.intellect.finance/API_Document#treasury_yield
     
@@ -233,7 +233,7 @@ def treasury_yield(*ignore, duration, start_date, end_date):
     return send_http_request('treasury_yield', duration=duration, start_date=start_date, end_date=end_date)
 
 
-def treasury_real_yield(*ignore, duration, start_date, end_date): 
+def treasury_real_yield(duration, start_date, end_date): 
     """
     https://www.intellect.finance/API_Document#treasury_real_yield
     
@@ -257,7 +257,7 @@ def treasury_real_yield(*ignore, duration, start_date, end_date):
     return send_http_request('treasury_real_yield', duration=duration, start_date=start_date, end_date=end_date)
 
 
-def fed_fund_target_rate(*ignore, start_date, end_date): 
+def fed_fund_target_rate(start_date, end_date): 
     """
     https://www.intellect.finance/API_Document#fed_fund_target_rate
     
@@ -276,7 +276,7 @@ def fed_fund_target_rate(*ignore, start_date, end_date):
     return send_http_request('fed_fund_target_rate', start_date=start_date, end_date=end_date)
 
 
-def tickers_available(*ignore, ): 
+def tickers_available(): 
     """
     https://www.intellect.finance/API_Document#tickers_available
     Get a full list of currently active tickers.
@@ -289,7 +289,7 @@ def tickers_available(*ignore, ):
     return send_http_request('tickers_available', )
 
 
-def company_info_by_cik(*ignore, cik): 
+def company_info_by_cik(cik): 
     """
     https://www.intellect.finance/API_Document#company_info_by_cik
     Get company information by Central Index Key (CIK) number.
@@ -303,7 +303,7 @@ def company_info_by_cik(*ignore, cik):
     return send_http_request('company_info_by_cik', cik=cik)
 
 
-def company_info_by_ticker(*ignore, ticker): 
+def company_info_by_ticker(ticker): 
     """
     https://www.intellect.finance/API_Document#company_info_by_ticker
     Get company information by a company's ticker.
@@ -317,7 +317,7 @@ def company_info_by_ticker(*ignore, ticker):
     return send_http_request('company_info_by_ticker', ticker=ticker)
 
 
-def search_company(*ignore, input): 
+def search_company(input): 
     """
     https://www.intellect.finance/API_Document#search_company
     Get company information by searching a company's ticker, CIK or name. This API supports the auto-complete functionality (powered by Elasticsearch). Auto-completion means that you don't need to input the full name of the company. For example, just input `starb`, and we will return `Starbucks`. Note that we will return at most 20 items in this search API. 
@@ -331,7 +331,7 @@ def search_company(*ignore, input):
     return send_http_request('search_company', input=input)
 
 
-def sec_raw_financial_data(*ignore, cik_or_ticker, year_quarter, statement_type): 
+def sec_raw_financial_data(cik_or_ticker, year_quarter, statement_type): 
     """
     https://www.intellect.finance/API_Document#sec_raw_financial_data
     Get the raw financial statement reported by a company in a given quarter. 
@@ -352,7 +352,7 @@ def sec_raw_financial_data(*ignore, cik_or_ticker, year_quarter, statement_type)
     return send_http_request('sec_raw_financial_data', cik_or_ticker=cik_or_ticker, year_quarter=year_quarter, statement_type=statement_type)
 
 
-def sec_cleaned_financial_data(*ignore, cik_or_ticker, stmt=None, q_or_y=None, end_year_q=None): 
+def sec_cleaned_financial_data(cik_or_ticker, stmt=None, q_or_y=None, end_year_q=None): 
     """
     https://www.intellect.finance/API_Document#sec_cleaned_financial_data
     Get the financial statement reported by a company in a given quarter. This API provides the essentially same data as the `sec_raw_financial_data` API, but this API 1) cleans up the raw data to make it presentable as a data.frame or in Excel, and 2) provides financial data for multiple quarters, rather than single quarter like the `sec_raw_financial_data` API.
@@ -369,7 +369,7 @@ def sec_cleaned_financial_data(*ignore, cik_or_ticker, stmt=None, q_or_y=None, e
     return send_http_request('sec_cleaned_financial_data', cik_or_ticker=cik_or_ticker, stmt=stmt, q_or_y=q_or_y, end_year_q=end_year_q)
 
 
-def fundamental_metrics(*ignore, cik_or_ticker, metric_name, historical_or_latest=None): 
+def fundamental_metrics(cik_or_ticker, metric_name, historical_or_latest=None): 
     """
     https://www.intellect.finance/API_Document#fundamental_metrics
     Get fundamental metrics (such as P/E and P/S ratios) by quarter.
@@ -385,7 +385,7 @@ def fundamental_metrics(*ignore, cik_or_ticker, metric_name, historical_or_lates
     return send_http_request('fundamental_metrics', cik_or_ticker=cik_or_ticker, metric_name=metric_name, historical_or_latest=historical_or_latest)
 
 
-def list_sec_daily_filings(*ignore, date, cik=None, _NEXT_TOKEN_=None): 
+def list_sec_daily_filings(date, cik=None, _NEXT_TOKEN_=None): 
     """
     https://www.intellect.finance/API_Document#list_sec_daily_filings
     Get the list of all filings reported to SEC on a certain date. 
@@ -407,7 +407,7 @@ def list_sec_daily_filings(*ignore, date, cik=None, _NEXT_TOKEN_=None):
     return send_http_request('list_sec_daily_filings', date=date, cik=cik, _NEXT_TOKEN_=_NEXT_TOKEN_)
 
 
-def sec_8k_6k(*ignore, cik_or_ticker, start_date, end_date): 
+def sec_8k_6k(cik_or_ticker, start_date, end_date): 
     """
     https://www.intellect.finance/API_Document#sec_8k_6k
     Get a list of 8-K or 6-K filings from start_date to end_date (cannot be more than 700 days). 
@@ -426,7 +426,7 @@ def sec_8k_6k(*ignore, cik_or_ticker, start_date, end_date):
     return send_http_request('sec_8k_6k', cik_or_ticker=cik_or_ticker, start_date=start_date, end_date=end_date)
 
 
-def sec_other(*ignore, cik_or_ticker, start_date, end_date): 
+def sec_other(cik_or_ticker, start_date, end_date): 
     """
     https://www.intellect.finance/API_Document#sec_other
     Get a list of `other` filings (i.e. 13-F, 13-H, SC TO-T, CORRESP, DEF 14A, DEFA14A, PX14A6G, EC STAFF LETTER, etc) filings in a certain date period (cannot be more than 190 days). 
@@ -443,7 +443,7 @@ def sec_other(*ignore, cik_or_ticker, start_date, end_date):
     return send_http_request('sec_other', cik_or_ticker=cik_or_ticker, start_date=start_date, end_date=end_date)
 
 
-def sec_10k_10q_20f_40f(*ignore, cik_or_ticker, start_date, end_date): 
+def sec_10k_10q_20f_40f(cik_or_ticker, start_date, end_date): 
     """
     https://www.intellect.finance/API_Document#sec_10k_10q_20f_40f
     Get a list of 10-K, 10-Q, 20-F, or 40-F filings in a certain date period (cannot be more than 380 days). 
@@ -462,7 +462,7 @@ def sec_10k_10q_20f_40f(*ignore, cik_or_ticker, start_date, end_date):
     return send_http_request('sec_10k_10q_20f_40f', cik_or_ticker=cik_or_ticker, start_date=start_date, end_date=end_date)
 
 
-def sec_345(*ignore, cik_or_ticker, start_date, end_date): 
+def sec_345(cik_or_ticker, start_date, end_date): 
     """
     https://www.intellect.finance/API_Document#sec_345
     Get a list of Form `3`, `4`, and `5` filings. 
