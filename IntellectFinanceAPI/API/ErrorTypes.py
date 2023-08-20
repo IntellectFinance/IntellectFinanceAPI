@@ -9,14 +9,19 @@ class APIError(Exception):
     STATUS_CODE = 400
     
     def __init__(self, *args: object):
-        super().__init__(args)
+        super().__init__(*args)
         self.ADD_ADDITIONAL_ERROR_INFO = {}
+        self.error = args[0] if len(args) else ''
         
     def set_additional_error_info(self, key, value):
         self.ADD_ADDITIONAL_ERROR_INFO[key] = value
     
     def get_additional_error_info(self):
         return self.ADD_ADDITIONAL_ERROR_INFO
+
+    def __str__(self):
+        return f'{type(self).__name__}: {self.error}'
+
 
 
 class APITotalCreditsExceed(APIError):
