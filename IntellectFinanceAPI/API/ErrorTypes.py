@@ -1,5 +1,9 @@
 import logging
 
+import re
+from PyHelpers import move_date_str
+from WarrensDataAccess.TopicCollectionReadOnlyV2 import TopicNotFoundError as TopicNotFoundError_
+
 logger = logging.getLogger(__name__)
 logger.addHandler(logging.NullHandler())
 
@@ -12,16 +16,22 @@ class APIError(Exception):
         super().__init__(*args)
         self.ADD_ADDITIONAL_ERROR_INFO = {}
         self.error = args[0] if len(args) else ''
-        
+    
     def set_additional_error_info(self, key, value):
         self.ADD_ADDITIONAL_ERROR_INFO[key] = value
     
     def get_additional_error_info(self):
         return self.ADD_ADDITIONAL_ERROR_INFO
-
+    
     def __str__(self):
         return f'{type(self).__name__}: {self.error}'
 
+
+class TopicNotFoundError(APIError, TopicNotFoundError_):
+    """
+    If you are in any non-unlimited plan, and call the APT too many times, we will raise this error.
+    """
+    pass
 
 
 class APITotalCreditsExceed(APIError):
@@ -48,19 +58,8 @@ class ParameterMissingError(APIError):
     """
 
 
-class CannotFindTopicNameError(APIError):
-    pass
-
-
 class CannotFindTickerNameError(APIError):
     pass
-
-
-class TopicIsMergedToAnotherTopicError(APIError):
-    STATUS_CODE = 301  # 301 Moved Permanently
-    JSON_EXAMPLE_FOR_API_DOC = {"error_type": "TopicIsMergedToAnotherTopic", "new_topic_name": "A_NEW_TOPIC_NAME"}
-    
-    ERROR_KEY_new_topic_name = 'new_topic_name'
 
 
 class ParameterInvalidError(APIError):
@@ -90,3 +89,18 @@ for k in list(globals().values()):
             LIST_KNOWN_ERROR_NAMES.append(k.__name__)
     except Exception:
         pass
+
+
+def check_date_range(request, start_date, end_date, LARGEST_DATA_RANGE=None):
+    if not re.compile(r'^\d\d\d\d-\d\d-\d\d').findall(start_date):
+        raise ParameterInvalidError(f'`start_date` must be in the format of YYYY-mm-dd, you provided `{start_date}`.')
+    
+    if not re.compile(r'^\d\d\d\d-\d\d-\d\d').findall(end_date):
+        raise ParameterInvalidError(f'`end_date` must be in the format of YYYY-mm-dd, you provided `{end_date}`.')
+    
+    if LARGEST_DATA_RANGE:
+        if move_date_str(date_str=start_date, days=LARGEST_DATA_RANGE) < end_date:
+            if str(request.GET.get('SKIP_CONSTRAINT')).lower() in ['1', 'true']:
+                pass
+            else:
+                raise ParameterInvalidError(f'Data range cannot be larger than {LARGEST_DATA_RANGE} days. You provided ({start_date}--{end_date}).')

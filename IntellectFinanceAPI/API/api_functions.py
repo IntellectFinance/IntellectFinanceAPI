@@ -4,7 +4,7 @@ from IntellectFinanceAPI.API.Utility import send_http_request
 def news_by_source(news_source, start_time, end_time): 
     """
     https://www.intellect.finance/API_Document#news_by_source
-    Get a list of news by the news source (i.e. WSJ, Bloomberg, or CNBC, etc). The max time range shall be less than 70 hours.
+    Get a list of news by the news source (i.e. WSJ, Bloomberg, or CNBC, etc). The max time range shall be less than 7 days.
 
     :example: news_by_source(news_source='CNBC', start_time='2022-02-01 02:00:00', end_time='2022-02-01 12:00:00')
     
@@ -39,20 +39,15 @@ def news_by_ticker(ticker, start_date, end_date, stop_at_number_of_news=None, if
 def news_by_topic(topic_name, start_date, end_date): 
     """
     https://www.intellect.finance/API_Document#news_by_topic
-    Get list of news under one topic within a certain date range (cannot be more than 400 days). In case the topic you provide is merged with a new topic, we will return an JSON response 
-    {
-       "error_type": "TopicIsMergedToAnotherTopic", 
-       "new_topic_name": "A_NEW_TOPIC_NAME", 
-    }
-<br/>with HTTP code `301`. Thus, you can re-call this API with the new topic name shown in `A_NEW_TOPIC_NAME`. 
+    Get list of news under one topic within a certain date range (cannot be more than 7 days). 
 
-    :example: news_by_topic(topic_name='Hidden impact on China's financial center', start_date='2022-03-30', end_date='2023-05-03')
+    :example: news_by_topic(topic_name='President Biden', start_date='2022-03-30', end_date='2022-04-05')
     
-    :exception: ['ParameterInvalidError', 'ParameterMissingError', 'TopicIsMergedToAnotherTopicError']
-    :param topic_name: A topic name. Note that we only accept topic names that are listed in the `topic_names` API.
-    :param start_date: The start date (UTC) of the news.
-    :param end_date: The end date (UTC) (including) of the news.
-    :return: {'result': `A list of news.`}
+    :exception: ['ParameterInvalidError', 'ParameterMissingError', 'TopicNotFoundError']
+    :param topic_name: A topic name. Note that we only accept topic names that are listed in the `time_series_topic_names` API.
+    :param start_date: The start date (UTC) of the news related to this topic.
+    :param end_date: The end date (UTC) (including) of the news related to this topic.
+    :return: {'result': `See the result for the `news_by_source` API.`}
     """
     return send_http_request('news_by_topic', topic_name=topic_name, start_date=start_date, end_date=end_date)
 
@@ -72,19 +67,161 @@ def list_tickers_with_news(year=None, min_number_news_per_ticker=None):
     return send_http_request('list_tickers_with_news', year=year, min_number_news_per_ticker=min_number_news_per_ticker)
 
 
-def relevance_score_between_two_tickers(ticker_1, ticker_2): 
+def time_series_topic_names(start_date, end_date): 
     """
-    https://www.intellect.finance/API_Document#relevance_score_between_two_tickers
-    Get the relevance score between two tickers. The score measures the similarity of the two tickers/companies. Note that the relevance score may change every day as we receive new information (i.e. new events, or news) about each ticker.
+    https://www.intellect.finance/API_Document#time_series_topic_names
+    Get a list of topic names within a date range (has to be less or equal than 90 days). 
 
-    :example: relevance_score_between_two_tickers(ticker_1='GOOGL', ticker_2='MSFT')
+    :example: time_series_topic_names(start_date='2023-06-01', end_date='2023-06-25')
     
-    :exception: ['ExceptionNoTickerFound', 'ParameterMissingError']
-    :param ticker_1: A ticker.
-    :param ticker_2: Another ticker.
-    :return: {'result': `The degree of relevance or similarity between the two tickers, ranging from (0, 1). The higher the score, the more related/similar are these two tickers.`}
+    :exception: ['ParameterInvalidError', 'ParameterMissingError']
+    :param start_date: Start date (UTC) of the news range. Its format should be `YYYY-MM-DD`.
+    :param end_date: End date (UTC) (including) of the news range. Its format should be `YYYY-MM-DD`. The data range between the start date and the end date shall not be more than 90 days.
+    :return: {'result': `A list of topics and the counts of occurrence of the topic, ordered by date (newest date is on the top).`}
     """
-    return send_http_request('relevance_score_between_two_tickers', ticker_1=ticker_1, ticker_2=ticker_2)
+    return send_http_request('time_series_topic_names', start_date=start_date, end_date=end_date)
+
+
+def time_series_topic_sentiment(topic_name, start_date, end_date): 
+    """
+    https://www.intellect.finance/API_Document#time_series_topic_sentiment
+    Get a daily time series of sentiment scores for a topic (the time range cannot be more than 90 days.
+
+    :example: time_series_topic_sentiment(topic_name='President Biden', start_date='2022-03-30', end_date='2022-06-27')
+    
+    :exception: ['ParameterInvalidError', 'ParameterMissingError', 'TopicNotFoundError']
+    :param topic_name: A topic name. Note that we only accept topic names that are listed in the `time_series_topic_names` API.
+    :param start_date: The start date (UTC) of the news related to this topic.
+    :param end_date: The end date (UTC) (including) of the news related to this topic.
+    :return: {'result': `A list of sentiment scores (with number of news), ordered by date.`}
+    """
+    return send_http_request('time_series_topic_sentiment', topic_name=topic_name, start_date=start_date, end_date=end_date)
+
+
+def time_series_topic_embedding(topic_name, start_date, end_date): 
+    """
+    https://www.intellect.finance/API_Document#time_series_topic_embedding
+    Get a weekly time series of the embedding vectors for the inputted topic. The embedding vector of a topic in a week is the weighted average of the embedding vectors of all the news related to the inputted topic in that week. See the `<function estimate_embedding_vector at 0x1166c1620>` API documentation regarding how the embedding vector is estimated.
+
+    :example: time_series_topic_embedding(topic_name='President Biden', start_date='2022-01-23', end_date='2022-02-22')
+    
+    :exception: ['ParameterInvalidError', 'ParameterMissingError', 'TopicNotFoundError']
+    :param topic_name: A topic name. Note that we only accept topic names that are listed in the `time_series_topic_names` API.
+    :param start_date: The start date (UTC) of the news related to this topic.
+    :param end_date: The end date (UTC) (including) of the news related to this topic.
+    :return: {'result': `A list of hashmaps, ordered by date in the descending order.`}
+    """
+    return send_http_request('time_series_topic_embedding', topic_name=topic_name, start_date=start_date, end_date=end_date)
+
+
+def time_series_relevant_topics_by_topic(topic_name, start_date, end_date): 
+    """
+    https://www.intellect.finance/API_Document#time_series_relevant_topics_by_topic
+    Get a weekly time series for the most relevant topics to the inputted topic.
+
+    :example: time_series_relevant_topics_by_topic(topic_name='President Biden', start_date='2022-01-23', end_date='2022-04-22')
+    
+    :exception: ['ParameterInvalidError', 'ParameterMissingError', 'TopicNotFoundError']
+    :param topic_name: A topic name. Note that we only accept topic names that are listed in the `time_series_topic_names` API.
+    :param start_date: The start date (UTC) of the news related to this topic.
+    :param end_date: The end date (UTC) (including) of the news related to this topic.
+    :return: {'result': `A list of hashmaps, ordered by date in the descending order.`}
+    """
+    return send_http_request('time_series_relevant_topics_by_topic', topic_name=topic_name, start_date=start_date, end_date=end_date)
+
+
+def time_series_relevant_tickers_by_topic(topic_name, start_date, end_date): 
+    """
+    https://www.intellect.finance/API_Document#time_series_relevant_tickers_by_topic
+    Get a daily time series for the most relevant tickers for the inputted topic.
+
+    :example: time_series_relevant_tickers_by_topic(topic_name='President Biden', start_date='2022-01-23', end_date='2022-04-22')
+    
+    :exception: ['ParameterInvalidError', 'ParameterMissingError', 'TopicNotFoundError']
+    :param topic_name: A topic name. Note that we only accept topic names that are listed in the `time_series_topic_names` API.
+    :param start_date: The start date (UTC) of the news related to this topic.
+    :param end_date: The end date (UTC) (including) of the news related to this topic.
+    :return: {'result': `A list of hashmaps, ordered by date in the descending order.`}
+    """
+    return send_http_request('time_series_relevant_tickers_by_topic', topic_name=topic_name, start_date=start_date, end_date=end_date)
+
+
+def estimate_embedding_vector(input): 
+    """
+    https://www.intellect.finance/API_Document#estimate_embedding_vector
+    Calculate a 768 dimension dense embedding vector using the <a target='_blank' href='https://huggingface.co/sentence-transformers/paraphrase-mpnet-base-v2'>sentence-transformers/paraphrase-mpnet-base-v2</a> model for any ticker, topic, or a paragraph. If you provide a ticker, we will calculate the embedding vector as the weighted average of the embeddings vectors of the related news since 2020, with higher weights assigned to the more recent news and more relevant news. <br><br>We also guarantee that the ticker's embedding always contain the most updated information, by re-calculating the embeddings for tickers based on the latest news in our backend data pipeline. <br><br>If the inputted text is longer than 2048 characters, we suggest you to use the `POST` method (instead of the GET method), and put hte inputted text into the `data` field. See the demo below.
+
+    :example: estimate_embedding_vector(input='GOOGL')
+    
+    :exception: ['ParameterMissingError']
+    :param input: Any input, such as ticker, topic, or a paragraph.
+    :return: {'result': `A hashmap with the embedding information.`}
+    """
+    return send_http_request('estimate_embedding_vector', input=input)
+
+
+def short_summary(inputted_paragraph): 
+    """
+    https://www.intellect.finance/API_Document#short_summary
+    Provide a short summary for the inputted text. We fine-tuned the Llama 2 7B model to predict the news title with the content of English news from top ranked financial news sites. Therefore, the short summary you will get from this API will also have the flavor of news title.<br><br>If the inputted text is longer than 2048 characters, we suggest you to use the `POST` method (instead of the GET method), and put hte inputted text into the `data` field. See the demo below.
+
+    :example: short_summary(inputted_paragraph='JOHANNESBURG—African fintech companies have found creative ways to help the continent’s consumers spend their money. Traditional payments companies want in.
+Global payment giants, including Mastercard MA -2.13%decrease; red down pointing triangle and Visa V -1.55%decrease; red down pointing triangle, are pouring billions of dollars into African companies that have powered a sharp expansion in e-commerce on the continent. Recent deals have focused on mobile-money operators, which allow users to send funds using simple cellphones, and platforms that facilitate such payments for merchants such as Uber Technologies UBER -3.11%decrease; red down pointing triangle, Netflix or Estée Lauder without relying on credit cards or bank accounts.
+The investments come on the back of extraordinary growth in e-commerce in Africa, where online transactions have long lagged behind other regions, especially North America.
+By the end of this year, the U.S. Commerce Department expects some 435 million Africans will be spending money online, nearly double the level before the coronavirus pandemic. Since then, many consumers on the continent have continued to shop, study and entertain themselves using electronic payments.
+In August, Mastercard agreed to take a minority stake in the fintech business of South African telecommunications provider MTN Group MTNOY -1.57%decrease; red down pointing triangle—little known in the U.S., but a juggernaut in Africa and the Middle East. MTN said the deal, which hasn’t been finalized, values its fintech business at $5.2 billion. The size of Mastercard’s stake wasn’t disclosed, but it could go up to 30%, according to MTN.
+')
+    
+    :exception: ['ParameterMissingError']
+    :param inputted_paragraph: Any text (must less than 3000 words).
+    :return: {'result': `A hashmap with the short summary.`}
+    """
+    return send_http_request('short_summary', inputted_paragraph=inputted_paragraph)
+
+
+def zero_shot_classifier(inputted_paragraph, list_topics): 
+    """
+    https://www.intellect.finance/API_Document#zero_shot_classifier
+    Measure the relevance between the inputted text anc any given topic. The model we use for this API is a Llama 2 7B model fine-tuned on financial, political, or tech news, with the 'truth' data distilled from ChatGPT. <br><br>If the inputted text is longer than 2048 characters, we suggest you to use the `POST` method (instead of the GET method), and put hte inputted text into the `data` field. See the demo below.
+
+    :example: zero_shot_classifier(inputted_paragraph='Pfizer Prices Covid Drug Paxlovid at $1,400 for a Five-Day Course. The drugmaker, which has begun negotiating with pharmacy-benefit managers and health plans this week, is expected to offer steep discounts to ensure wide access.', list_topics='Politics; Retail; Defence Industry; Healthcare; Geopolitical Risks')
+    
+    :exception: ['ParameterMissingError']
+    :param inputted_paragraph: Any text, such as a piece of news, or a paragraph.
+    :param list_topics: A list of topics, separated by `;`.
+    :return: {'result': `A hashmap contains the relevance score of each provided topic.`}
+    """
+    return send_http_request('zero_shot_classifier', inputted_paragraph=inputted_paragraph, list_topics=list_topics)
+
+
+def sentiment_overall(input): 
+    """
+    https://www.intellect.finance/API_Document#sentiment_overall
+    Estimate the sentiment scores for the inputted sentence. The sentiment score ranges from -1 to +1, where -1 means extremely positive, and +1 means extremely positive. The model we use for this API is the <a target='_blank' href='https://huggingface.co/cardiffnlp/twitter-roberta-base-sentiment'>cardiffnlp/twitter-roberta-base-sentiment model</a>. <br><br>If the inputted text is longer than 2048 characters, we suggest you to use the `POST` method (instead of the GET method), and put hte inputted text into the `data` field. See the demo below.
+
+    :example: sentiment_overall(input='Tesla’s Earnings Fall as Price Cuts Weigh on Profit.')
+    
+    :exception: ['ParameterMissingError']
+    :param input: Any input, such as a piece of news, or a paragraph.
+    :return: {'result': `A hashmap with the sentiment score.`}
+    """
+    return send_http_request('sentiment_overall', input=input)
+
+
+def time_series_ticker_sentiment(ticker, start_date, end_date): 
+    """
+    https://www.intellect.finance/API_Document#time_series_ticker_sentiment
+    Get a daily time series of sentiment scores for a ticker (the time range cannot be more than 90 days). 
+
+    :example: time_series_ticker_sentiment(ticker='AMZN', start_date='2021-06-30', end_date='2021-09-27')
+    
+    :exception: ['ParameterInvalidError', 'ParameterMissingError']
+    :param ticker: A ticker.
+    :param start_date: The start date (UTC) of the news.
+    :param end_date: The end date (UTC) (including) of the news.
+    :return: {'result': `A time series (list) of sentiment scores (with number of news), ordered by date.`}
+    """
+    return send_http_request('time_series_ticker_sentiment', ticker=ticker, start_date=start_date, end_date=end_date)
 
 
 def relevant_tickers_by_ticker(ticker): 
@@ -101,80 +238,19 @@ def relevant_tickers_by_ticker(ticker):
     return send_http_request('relevant_tickers_by_ticker', ticker=ticker)
 
 
-def relevant_tickers_by_topic(topic_name, year): 
+def relevance_score_between_two_tickers(ticker_1, ticker_2): 
     """
-    https://www.intellect.finance/API_Document#relevant_tickers_by_topic
-    Get the most relevant tickers under one topic, and the degree of the relevance of those tickers to that topic. In case the topic you provide is merged with a new topic, we will return an JSON response 
-    {
-       "error_type": "TopicIsMergedToAnotherTopic", 
-       "new_topic_name": "A_NEW_TOPIC_NAME", 
-    }
-<br/>with HTTP code `301`. Thus, you can re-call this API with the new topic name shown in `A_NEW_TOPIC_NAME`. 
+    https://www.intellect.finance/API_Document#relevance_score_between_two_tickers
+    Calculate the relevance score between two tickers. The score measures the similarity of the two tickers/companies. Note that the relevance score may change every day as we receive new information (i.e. new events, or news) about each ticker.
 
-    :example: relevant_tickers_by_topic(topic_name='Hidden impact on China's financial center', year='2021')
+    :example: relevance_score_between_two_tickers(ticker_1='GOOGL', ticker_2='MSFT')
     
-    :exception: ['CannotFindTopicNameError', 'ParameterInvalidError', 'ParameterMissingError', 'TopicIsMergedToAnotherTopicError']
-    :param topic_name: A topic name. Note that we only accept topic names found in the `topic_names` API.
-    :param year: The year of the topic.
-    :return: {'result': `A list of dictionaries, ordered by the relevance score (high to low). Each dictionary contains a relevant ticker to the input topic, and the degree of their relevance (relevance sores).`}
+    :exception: ['ExceptionNoTickerFound', 'ParameterMissingError']
+    :param ticker_1: A ticker.
+    :param ticker_2: Another ticker.
+    :return: {'result': `The degree of relevance or similarity between the two tickers, ranging from (0, 1). The higher the score, the more related/similar are these two tickers.`}
     """
-    return send_http_request('relevant_tickers_by_topic', topic_name=topic_name, year=year)
-
-
-def topic_names(start_date, end_date, topic_name=None): 
-    """
-    https://www.intellect.finance/API_Document#topic_names
-    Get a list of topic names within a date range (has to be less or equal than 400 days). 
-    The topic names may change at any time. For example, 
-    we may merge topics `A` and `B` together and create a new topic `C`. 
-    Then the list will no longer contain topics `A` and `B`.
-
-    :example: topic_names(start_date='2021-02-01', end_date='2022-02-03', topic_name='Zillow's near-term fate hinges')
-    
-    :exception: ['ParameterInvalidError', 'ParameterMissingError']
-    :param start_date: Start date (UTC) of the news range. Its format should be `YYYY-MM-DD`.
-    :param end_date: End date (UTC) (including) of the news range. Its format should be `YYYY-MM-DD`. The data range between start date to end date shall not be more than 31 days.
-    :param topic_name: Optional (default value is `EMPTY`). If you already know which topic's information you want to get, you can directly provide a topic name as a filter. This can save your credits and reduce the latency of this API.
-    :return: {'result': `A hashmap of topics. Key is the topic name, and value is the information about the topic.`}
-    """
-    return send_http_request('topic_names', start_date=start_date, end_date=end_date, topic_name=topic_name)
-
-
-def sentiment_time_series_one_topic(topic_name, start_date, end_date): 
-    """
-    https://www.intellect.finance/API_Document#sentiment_time_series_one_topic
-    Get a time series of sentiment scores for a topic (the time range cannot be more than 740 days). In case the topic you provide is merged with a new topic, we will return an JSON response 
-    {
-       "error_type": "TopicIsMergedToAnotherTopic", 
-       "new_topic_name": "A_NEW_TOPIC_NAME", 
-    }
-<br/>with HTTP code `301`. Thus, you can re-call this API with the new topic name shown in `A_NEW_TOPIC_NAME`. 
-
-    :example: sentiment_time_series_one_topic(topic_name='Hidden impact on China's financial center', start_date='2022-03-30', end_date='2024-04-07')
-    
-    :exception: ['CannotFindTopicNameError', 'ParameterInvalidError', 'ParameterMissingError', 'TopicIsMergedToAnotherTopicError']
-    :param topic_name: A topic name. Note that we only accept topic names that are listed in the `topic_names` API.
-    :param start_date: The start date (UTC) of the news.
-    :param end_date: The end date (UTC) (including) of the news.
-    :return: {'result': `A list of sentiment scores (with number of news), ordered by date.`}
-    """
-    return send_http_request('sentiment_time_series_one_topic', topic_name=topic_name, start_date=start_date, end_date=end_date)
-
-
-def sentiment_time_series_one_ticker(ticker, start_date, end_date): 
-    """
-    https://www.intellect.finance/API_Document#sentiment_time_series_one_ticker
-    Get a time series of sentiment scores for a ticker (the time range cannot be more than 740 days). 
-
-    :example: sentiment_time_series_one_ticker(ticker='AMZN', start_date='2021-06-30', end_date='2023-07-09')
-    
-    :exception: ['ParameterInvalidError', 'ParameterMissingError']
-    :param ticker: A ticker.
-    :param start_date: The start date (UTC) of the news.
-    :param end_date: The end date (UTC) (including) of the news.
-    :return: {'result': `A time series (list) of sentiment scores (with number of news), ordered by date.`}
-    """
-    return send_http_request('sentiment_time_series_one_ticker', ticker=ticker, start_date=start_date, end_date=end_date)
+    return send_http_request('relevance_score_between_two_tickers', ticker_1=ticker_1, ticker_2=ticker_2)
 
 
 def annualized_sharpe_ratio_by_ticker(ticker, start_date, end_date, risk_free_rate, smart_sharpe_flag=None): 
@@ -361,28 +437,12 @@ def sec_cleaned_financial_data(cik_or_ticker, stmt=None, q_or_y=None, end_year_q
     
     :exception: ['ExceptionNoCIK', 'ExceptionNoData', 'ParameterMissingError']
     :param cik_or_ticker: CIK or ticker a company.
-    :param stmt: Optional (default value is `INCOME_STATEMENT`). Type of Statement of the company. A valid option should be one of ['BALANCE_SHEET', 'CASHFLOW', 'INCOME_STATEMENT']. Default is `INCOME_STATEMENT`.
+    :param stmt: Optional (default value is `INCOME_STATEMENT`). Type of Statement of the company. A valid option should be one of `BALANCE_SHEET`, `CASHFLOW`, or `INCOME_STATEMENT`. Default is `INCOME_STATEMENT`.
     :param q_or_y: Optional (default value is `ttm`). Get `quarterly` or `ttm` (trailing 12 months) data. Default is `ttm`.
     :param end_year_q: Optional (default value is `LATEST`). Ending calendar (not fiscal) year and quarter. The format should be like `2020Q4`, or `LATEST`. Default is `LATEST`, which means we will just return the latest available data.
     :return: {'result': `Cleaned financial statement for 8 quarters (if `q_or_y`) is `q`), or 5 years (if `q_or_y` is `ttm` or `yearly`). It is a hashmap (with key `df_main` for major financial items, and `df_children` for financial items in certain dimensions).`}
     """
     return send_http_request('sec_cleaned_financial_data', cik_or_ticker=cik_or_ticker, stmt=stmt, q_or_y=q_or_y, end_year_q=end_year_q)
-
-
-def fundamental_metrics(cik_or_ticker, metric_name, historical_or_latest=None): 
-    """
-    https://www.intellect.finance/API_Document#fundamental_metrics
-    Get fundamental metrics (such as P/E and P/S ratios) by quarter.
-
-    :example: fundamental_metrics(cik_or_ticker=789019, metric_name='PE', historical_or_latest='LATEST')
-    
-    :exception: ['ParameterMissingError']
-    :param cik_or_ticker: CIK or ticker a company.
-    :param metric_name: Metric name. Must be one of ['Outstanding-Shares', 'Market-Cap', 'PE-Diluted', 'PS', 'PE', 'Gross-Margin', 'Operating-Margin', 'Net-Margin', 'Book-Value', 'Price-to-Book-Value', 'Tangible-Book-Value', 'Price-to-Tangible-Book-Value', 'FCF', 'Price-to-FCF-Ratio', 'PEG-Ratio', 'EBIT', 'EBITDA', 'Interest-Coverage', 'Current-Ratio', 'Quick-Ratio', 'Dividend-Yield'].
-    :param historical_or_latest: Optional (default value is `LATEST`). Choose to retrieve either the value for the latest quarter (`LATEST`), or the historical values (`HISTORICAL`) for the last 3 years. Note that some metrics, such as PE, require the stock price information. If you choose `LATEST`, we will use the latest stock price (which may change during the day). If you choose `HISTORICAL`, we will use the latest end-of-day stock price for the latest quarter; For other quarters, we use the volume-weighted average end-of-day stock price one month after the fiscal quarter ends. For example, if the fiscal quarter ends at 12/31/2022, we will use the stock price from 02/01/2023 - 02/28/2023.
-    :return: {'result': `List of fundamental metrics.`}
-    """
-    return send_http_request('fundamental_metrics', cik_or_ticker=cik_or_ticker, metric_name=metric_name, historical_or_latest=historical_or_latest)
 
 
 def list_sec_daily_filings(date, cik=None, _NEXT_TOKEN_=None): 
