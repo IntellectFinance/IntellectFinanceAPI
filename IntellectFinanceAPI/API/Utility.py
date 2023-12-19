@@ -44,12 +44,16 @@ def _call_url(url):
         
         except HTTPError as e:
             http_response = e  # contains informative error message.
-            
-            result_dict = json.loads(http_response.read())  # `result_dict` is a dictionary
+            result_dict_str = http_response.read()
+            try:
+                result_dict = json.loads(result_dict_str)  # `result_dict` is a dictionary
+            except Exception as parsing_error:
+                logger.info(f'Error in parsing the JSON: {parsing_error}')
+                result_dict = {'error': str(result_dict_str), 'error_type': UnknownAPIError.__name__}
             return result_dict
         
         except ConnectionResetError as e:
-            logger.debug(f'Retry `{url}` as there is an error: {e}')
+            logger.info(f'Retry `{url}` as there is an error: {e}')
             error = e
     
     if error:
