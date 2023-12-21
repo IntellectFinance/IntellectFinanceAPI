@@ -404,6 +404,20 @@ def search_company(input):
     return send_http_request('search_company', input=input)
 
 
+def big_index_holdings(index_name): 
+    """
+    https://www.intellect.finance/API_Document#big_index_holdings
+    Get an updated list of stock tickers and their weights held in a stock index.
+
+    :example: big_index_holdings(index_name=1652044)
+    
+    :exception: ['ParameterMissingError']
+    :param index_name: The index name. Currently we cover the following indices ['SP500', 'SP_MIDCAP_400', 'DIJA', 'NASDAQ_100', 'Russell_2000'].
+    :return: {'result': `The holdings of the index, and the weight of each holding.`}
+    """
+    return send_http_request('big_index_holdings', index_name=index_name)
+
+
 def sec_raw_financial_data(cik_or_ticker, year_quarter, statement_type): 
     """
     https://www.intellect.finance/API_Document#sec_raw_financial_data
