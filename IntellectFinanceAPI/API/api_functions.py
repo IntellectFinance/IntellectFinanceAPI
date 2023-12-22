@@ -149,7 +149,7 @@ def time_series_relevant_tickers_by_topic(topic_name, start_date, end_date):
 def estimate_embedding_vector(input): 
     """
     https://www.intellect.finance/API_Document#estimate_embedding_vector
-    Calculate a 768 dimension dense embedding vector using the <a target='_blank' href='https://huggingface.co/sentence-transformers/paraphrase-mpnet-base-v2'>sentence-transformers/paraphrase-mpnet-base-v2</a> model for any ticker, topic, or a paragraph. If you provide a ticker, we will calculate the embedding vector as the weighted average of the embeddings vectors of the related news since 2020, with higher weights assigned to the more recent news and more relevant news. <br><br>We also guarantee that the ticker's embedding always contain the most updated information, by re-calculating the embeddings for tickers based on the latest news in our backend data pipeline. <br><br>If the inputted text is longer than 1024 characters, we suggest you to use the `POST` method (instead of the GET method), and put hte inputted text into the `data` field. See the demo below.
+    Calculate a 768 dimension dense embedding vector using the <a target='_blank' href='https://huggingface.co/sentence-transformers/paraphrase-mpnet-base-v2'>sentence-transformers/paraphrase-mpnet-base-v2</a> model for any ticker, topic, or a paragraph. If you provide a ticker, we will calculate the embedding vector as the weighted average of the embeddings vectors of the related news since 2020, with higher weights assigned to the more recent news and more relevant news. <br><br>We also guarantee that the ticker's embedding always contain the most updated information, by re-calculating the embeddings for tickers based on the latest news in our backend data pipeline. <br><br>If the inputted text is longer than 1024 characters, we suggest you to use the `POST` method (instead of the `GET` method), and put the inputted text into the `data` field. See the demo below.
 
     :example: estimate_embedding_vector(input='GOOGL')
     
@@ -163,7 +163,7 @@ def estimate_embedding_vector(input):
 def short_summary(inputted_paragraph): 
     """
     https://www.intellect.finance/API_Document#short_summary
-    Provide a short summary for the inputted text. We fine-tuned the Llama 2 7B model to predict the news title with the content of English news from top ranked financial news sites. Therefore, the short summary you will get from this API will also have the flavor of news title.<br><br>If the inputted text is longer than 1024 characters, we suggest you to use the `POST` method (instead of the GET method), and put hte inputted text into the `data` field. See the demo below.
+    Provide a short summary for the inputted text. We fine-tuned the Llama 2 7B model to predict the news title with the content of English news from top ranked financial news sites. Therefore, the short summary you will get from this API will also have the flavor of news title.<br><br>If the inputted text is longer than 1024 characters, we suggest you to use the `POST` method (instead of the `GET` method), and put the inputted text into the `data` field. See the demo below.
 
     :example: short_summary(inputted_paragraph='JOHANNESBURG—African fintech companies have found creative ways to help the continent’s consumers spend their money. Traditional payments companies want in.
 Global payment giants, including Mastercard MA -2.13 decrease; red down pointing triangle and Visa V -1.55 decrease; red down pointing triangle, are pouring billions of dollars into African companies that have powered a sharp expansion in e-commerce on the continent. Recent deals have focused on mobile-money operators, which allow users to send funds using simple cellphones, and platforms that facilitate such payments for merchants such as Uber Technologies UBER -3.11 decrease; red down pointing triangle, Netflix or Estée Lauder without relying on credit cards or bank accounts.
@@ -179,7 +179,7 @@ The investments come on the back of extraordinary growth in e-commerce in Africa
 def zero_shot_classifier(inputted_paragraph, list_topics): 
     """
     https://www.intellect.finance/API_Document#zero_shot_classifier
-    Measure the relevance between the inputted text anc any given topic. The model we use for this API is a Llama 2 7B model fine-tuned on financial, political, or tech news, with the 'truth' data distilled from ChatGPT. <br><br>If the inputted text is longer than 1024 characters, we suggest you to use the `POST` method (instead of the GET method), and put hte inputted text into the `data` field. See the demo below.
+    Measure the relevance between the inputted text anc any given topic. The model we use for this API is a Llama 2 7B model fine-tuned on financial, political, or tech news, with the 'truth' data distilled from ChatGPT. <br><br>If the inputted text is longer than 1024 characters, we suggest you to use the `POST` method (instead of the `GET` method), and put the inputted text into the `data` field. See the demo below.
 
     :example: zero_shot_classifier(inputted_paragraph='Pfizer Prices Covid Drug Paxlovid at $1,400 for a Five-Day Course. The drugmaker, which has begun negotiating with pharmacy-benefit managers and health plans this week, is expected to offer steep discounts to ensure wide access.', list_topics='Politics; Retail; Defence Industry; Healthcare; Geopolitical Risks')
     
@@ -194,7 +194,7 @@ def zero_shot_classifier(inputted_paragraph, list_topics):
 def sentiment_overall(input): 
     """
     https://www.intellect.finance/API_Document#sentiment_overall
-    Estimate the sentiment scores for the inputted sentence. The sentiment score ranges from -1 to +1, where -1 means extremely positive, and +1 means extremely positive. The model we use for this API is the <a target='_blank' href='https://huggingface.co/cardiffnlp/twitter-roberta-base-sentiment'>cardiffnlp/twitter-roberta-base-sentiment model</a>. <br><br>If the inputted text is longer than 1024 characters, we suggest you to use the `POST` method (instead of the GET method), and put hte inputted text into the `data` field. See the demo below.
+    Estimate the sentiment scores for the inputted sentence. The sentiment score ranges from -1 to +1, where -1 means extremely positive, and +1 means extremely positive. The model we use for this API is the <a target='_blank' href='https://huggingface.co/cardiffnlp/twitter-roberta-base-sentiment'>cardiffnlp/twitter-roberta-base-sentiment model</a>. <br><br>If the inputted text is longer than 1024 characters, we suggest you to use the `POST` method (instead of the `GET` method), and put the inputted text into the `data` field. See the demo below.
 
     :example: sentiment_overall(input='Tesla’s Earnings Fall as Price Cuts Weigh on Profit.')
     
@@ -224,13 +224,13 @@ def time_series_ticker_sentiment(ticker, start_date, end_date):
 def relevant_tickers_by_ticker(ticker): 
     """
     https://www.intellect.finance/API_Document#relevant_tickers_by_ticker
-    Get a list of the most relevant tickers to the input ticker. The more frequent that ticker A and B appear in the same news, then the more relevant these two tickers are.
+    Get a list of the most relevant tickers to the input ticker. The more frequent that ticker A and B appear in the same news, the more relevant these two tickers are.
 
     :example: relevant_tickers_by_ticker(ticker='GOOGL')
     
     :exception: ['ExceptionNoTickerFound', 'ParameterMissingError']
     :param ticker: A ticker.
-    :return: {'result': `A list of dictionaries, ordered by the relevance score (high to low). Each dictionary contains a relevant ticker to the input ticker, and the degree of their relevance (relevance sores).`}
+    :return: {'result': `A list of hashmaps, ordered by the relevance score (high to low). Each hashmap contains a relevant ticker to the input ticker, and the degree of their relevance (relevance sores).`}
     """
     return send_http_request('relevant_tickers_by_ticker', ticker=ticker)
 
@@ -409,11 +409,11 @@ def big_index_holdings(index_name):
     https://www.intellect.finance/API_Document#big_index_holdings
     Get an updated list of stock tickers and their weights held in a stock index.
 
-    :example: big_index_holdings(index_name=1652044)
+    :example: big_index_holdings(index_name='DIJA')
     
     :exception: ['ParameterMissingError']
     :param index_name: The index name. Currently we cover the following indices ['SP500', 'SP_MIDCAP_400', 'DIJA', 'NASDAQ_100', 'Russell_2000'].
-    :return: {'result': `The holdings of the index, and the weight of each holding.`}
+    :return: {'result': `A hashmap for the holdings of the index, and the retrival date.`}
     """
     return send_http_request('big_index_holdings', index_name=index_name)
 
