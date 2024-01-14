@@ -149,7 +149,7 @@ def time_series_relevant_tickers_by_topic(topic_name, start_date, end_date):
 def estimate_embedding_vector(input): 
     """
     https://www.intellect.finance/API_Document#estimate_embedding_vector
-    Calculate a 768 dimension dense embedding vector using the <a target='_blank' href='https://huggingface.co/sentence-transformers/paraphrase-mpnet-base-v2'>sentence-transformers/paraphrase-mpnet-base-v2</a> model for any ticker, topic, or a paragraph. If you provide a ticker, we will calculate the embedding vector as the weighted average of the embeddings vectors of the related news since 2020, with higher weights assigned to the more recent news and more relevant news. <br><br>We also guarantee that the ticker's embedding always contain the most updated information, by re-calculating the embeddings for tickers based on the latest news in our backend data pipeline. <br><br>If the inputted text is longer than 1024 characters, we suggest you to use the `POST` method (instead of the `GET` method), and put the inputted text into the `data` field. See the demo below.
+    Calculate a 768 dimension dense embedding vector using the <a target='_blank' href='https://huggingface.co/sentence-transformers/paraphrase-mpnet-base-v2'>sentence-transformers/paraphrase-mpnet-base-v2</a> model for any ticker, topic, or a paragraph. If you provide a ticker, we will calculate the embedding vector as the weighted average of the embeddings vectors of the related news since 2020, with higher weights assigned to the more recent news and more relevant news. <br><br>We also guarantee that the ticker's embedding always contain the most updated information, by re-calculating the embeddings for tickers based on the latest news in our backend data pipeline. <br><br>If the inputted text is longer than 1024 characters, we suggest you use the `POST` method (instead of the `GET` method), and put the inputted text into the `data` field. See the demo below.
 
     :example: estimate_embedding_vector(input='GOOGL')
     
@@ -163,7 +163,7 @@ def estimate_embedding_vector(input):
 def short_summary(inputted_paragraph): 
     """
     https://www.intellect.finance/API_Document#short_summary
-    Provide a short summary for the inputted text. We fine-tuned the Llama 2 7B model to predict the news title with the content of English news from top ranked financial news sites. Therefore, the short summary you will get from this API will also have the flavor of news title.<br><br>If the inputted text is longer than 1024 characters, we suggest you to use the `POST` method (instead of the `GET` method), and put the inputted text into the `data` field. See the demo below.
+    Provide a short summary for the inputted text. We fine-tuned the Llama 2 7B model to predict the news title with the content of English news from top ranked financial news sites. Therefore, the short summary you will get from this API will also have the flavor of news title.<br><br>If the inputted text is longer than 1024 characters, we suggest you use the `POST` method (instead of the `GET` method), and put the inputted text into the `data` field. See the demo below.
 
     :example: short_summary(inputted_paragraph='JOHANNESBURG—African fintech companies have found creative ways to help the continent’s consumers spend their money. Traditional payments companies want in.
 Global payment giants, including Mastercard MA -2.13 decrease; red down pointing triangle and Visa V -1.55 decrease; red down pointing triangle, are pouring billions of dollars into African companies that have powered a sharp expansion in e-commerce on the continent. Recent deals have focused on mobile-money operators, which allow users to send funds using simple cellphones, and platforms that facilitate such payments for merchants such as Uber Technologies UBER -3.11 decrease; red down pointing triangle, Netflix or Estée Lauder without relying on credit cards or bank accounts.
@@ -179,7 +179,7 @@ The investments come on the back of extraordinary growth in e-commerce in Africa
 def zero_shot_classifier(inputted_paragraph, list_topics): 
     """
     https://www.intellect.finance/API_Document#zero_shot_classifier
-    Measure the relevance between the inputted text anc any given topic. The model we use for this API is a Llama 2 7B model fine-tuned on financial, political, or tech news, with the 'truth' data distilled from ChatGPT. <br><br>If the inputted text is longer than 1024 characters, we suggest you to use the `POST` method (instead of the `GET` method), and put the inputted text into the `data` field. See the demo below.
+    Measure the relevance between the inputted text anc any given topic. The model we use for this API is a Llama 2 7B model fine-tuned on financial, political, or tech news, with the 'truth' data distilled from ChatGPT. <br><br>If the inputted text is longer than 1024 characters, we suggest you use the `POST` method (instead of the `GET` method), and put the inputted text into the `data` field. See the demo below.
 
     :example: zero_shot_classifier(inputted_paragraph='Pfizer Prices Covid Drug Paxlovid at $1,400 for a Five-Day Course. The drugmaker, which has begun negotiating with pharmacy-benefit managers and health plans this week, is expected to offer steep discounts to ensure wide access.', list_topics='Politics; Retail; Defence Industry; Healthcare; Geopolitical Risks')
     
@@ -194,7 +194,7 @@ def zero_shot_classifier(inputted_paragraph, list_topics):
 def sentiment_overall(input): 
     """
     https://www.intellect.finance/API_Document#sentiment_overall
-    Estimate the sentiment scores for the inputted sentence. The sentiment score ranges from -1 to +1, where -1 means extremely positive, and +1 means extremely positive. The model we use for this API is the <a target='_blank' href='https://huggingface.co/cardiffnlp/twitter-roberta-base-sentiment'>cardiffnlp/twitter-roberta-base-sentiment model</a>. <br><br>If the inputted text is longer than 1024 characters, we suggest you to use the `POST` method (instead of the `GET` method), and put the inputted text into the `data` field. See the demo below.
+    Estimate the sentiment scores for the inputted sentence. The sentiment score ranges from -1 to +1, where -1 means extremely positive, and +1 means extremely positive. The model we use for this API is the <a target='_blank' href='https://huggingface.co/cardiffnlp/twitter-roberta-base-sentiment'>cardiffnlp/twitter-roberta-base-sentiment model</a>. <br><br>If the inputted text is longer than 1024 characters, we suggest you use the `POST` method (instead of the `GET` method), and put the inputted text into the `data` field. See the demo below.
 
     :example: sentiment_overall(input='Tesla’s Earnings Fall as Price Cuts Weigh on Profit.')
     
@@ -278,7 +278,7 @@ def max_drawdown_by_ticker(ticker, start_date, end_date):
     :exception: ['ExceptionNoTickerFound', 'ParameterInvalidError', 'ParameterMissingError']
     :param ticker: A ticker.
     :param start_date: Start date. Its format should be `YYYY-MM-DD`.
-    :param end_date: End date (including). Its format should be `YYYY-MM-DD`. Should be less 370 days from the start_date.
+    :param end_date: End date (including). Its format should be `YYYY-MM-DD`. Should be less than 370 days from the start_date.
     :return: {'result': `A hashmap that contains the maximum drawdown and the date at which the maximum drawdown occurs.`}
     """
     return send_http_request('max_drawdown_by_ticker', ticker=ticker, start_date=start_date, end_date=end_date)
@@ -357,7 +357,7 @@ def tickers_available():
     :example: tickers_available()
     
     :exception: ['ParameterMissingError']
-    :return: {'result': `A list of tickers that are active (not de-listed).`}
+    :return: {'result': `A list of tickers that are active (not delisted).`}
     """
     return send_http_request('tickers_available', )
 
@@ -399,7 +399,7 @@ def search_company(input):
     
     :exception: ['ParameterMissingError']
     :param input: A company's ticker, CIK or name (don't need to input the full name).
-    :return: {'result': `A list of company that matched the input.`}
+    :return: {'result': `A list of companies that matched the input.`}
     """
     return send_http_request('search_company', input=input)
 
@@ -413,7 +413,7 @@ def big_index_holdings(index_name):
     
     :exception: ['ParameterMissingError']
     :param index_name: The index name. Currently we cover the following indices ['SP500', 'SP_MIDCAP_400', 'DIJA', 'NASDAQ_100', 'Russell_2000'].
-    :return: {'result': `A hashmap for the holdings of the index, and the retrival date.`}
+    :return: {'result': `A hashmap for the holdings of the index, and the retrieval date.`}
     """
     return send_http_request('big_index_holdings', index_name=index_name)
 
@@ -423,7 +423,7 @@ def sec_raw_financial_data(cik_or_ticker, year_quarter, statement_type):
     https://www.intellect.finance/API_Document#sec_raw_financial_data
     Get the raw financial statement reported by a company in a given quarter. 
     Our data contains not only the most common financial items such as `Sales`, or `Net Income`, 
-    but also the financial items in certain dimensions. For example, for Apple (cik is 320193), we provide the `Nert sales` by 
+    but also the financial items in certain dimensions. For example, for Apple (cik is 320193), we provide the `Net sales` by 
     each `ProductOrServiceAxis`, 
     ranging from `IPadMember`, `IPhoneMember`, `MacMember`, `WearablesHomeandAccessoriesMember`, and `ServiceMember` etc (these are the dimension values). 
     See the `dimension_type` in the return.
@@ -448,10 +448,10 @@ def sec_cleaned_financial_data(cik_or_ticker, stmt=None, q_or_ttm=None, end_year
     
     :exception: ['ExceptionNoCIK', 'ExceptionNoData', 'ParameterInvalidError', 'ParameterMissingError']
     :param cik_or_ticker: CIK or ticker a company.
-    :param stmt: Optional (default value is `INCOME_STATEMENT`). Type of Statement of the company. A valid option should be one of one of ['FINANCIAL_NOTES', 'CASHFLOW', 'BALANCE_SHEET', 'INCOME_STATEMENT']. Default is `INCOME_STATEMENT`.
+    :param stmt: Optional (default value is `INCOME_STATEMENT`). Type of Statement of the company. A valid option should be one of ['FINANCIAL_NOTES', 'CASHFLOW', 'BALANCE_SHEET', 'INCOME_STATEMENT']. Default is `INCOME_STATEMENT`.
     :param q_or_ttm: Optional (default value is `ttm`). Get `q` (quarterly) or `ttm` (each quarter contains the data from the trailing 12 months) data. Default is `ttm`.
     :param end_year_q: Optional (default value is `LATEST`). Ending calendar (not fiscal) year and quarter. The format should be like `2023Q3`, or `LATEST`. Default is `LATEST`, which means we will just return the latest available data. If you provide a specific quarter, the quarter has to be later than `2023Q3`.
-    :return: {'result': `Cleaned financial statement for at least 8 quarters (if `q_or_ttm`) is `q`), or at least  5 years (if `q_or_ttm` is `ttm` or `yearly`). It is a hashmap (with key `df_main` representing the major financial items, and `df_children` representing for financial items in certain dimensions).`}
+    :return: {'result': `Cleaned financial statement for at least 8 quarters (if `q_or_ttm`) is `q`), or at least  5 years (if `q_or_ttm` is `ttm` or `yearly`). It is a hashmap (with key `df_main` representing the major financial items, and `df_children` representing the financial items in certain dimensions (such as revenue from different countries or business lines)).`}
     """
     return send_http_request('sec_cleaned_financial_data', cik_or_ticker=cik_or_ticker, stmt=stmt, q_or_ttm=q_or_ttm, end_year_q=end_year_q)
 
@@ -461,11 +461,11 @@ def fundamental_metrics(cik_or_ticker, metric_name, start_year_quarter=None, end
     https://www.intellect.finance/API_Document#fundamental_metrics
     Get fundamental metrics (such as P/E and P/S ratios) by quarter. If the metric requires stock price as the input (such as PE), we will use the latest stock price for the latest quarter, whereas for other quarters, we will use the volume-weighted average end-of-day stock price one month after the fiscal quarter ends (For example, if the fiscal quarter ends at 12/31/2022, we will use the stock price from 02/01/2023 - 02/28/2023).
 
-    :example: fundamental_metrics(cik_or_ticker=789019, metric_name='PE', start_year_quarter='2021Q3', end_year_quarter='2023Q4')
+    :example: fundamental_metrics(cik_or_ticker=789019, metric_name='PE', start_year_quarter='2021Q3', end_year_quarter='2024Q1')
     
     :exception: ['ExceptionNoData', 'ParameterInvalidError', 'ParameterMissingError']
     :param cik_or_ticker: CIK or ticker a company.
-    :param metric_name: Metric name. Must be one of ['Market-Cap', 'Dividend-Yield', 'Outstanding-Shares', 'EBIT', 'EBITDA', 'Book-Value', 'Tangible-Book-Value', 'Enterprise-Value', 'PE-Diluted', 'PE', 'PS', 'FCF', 'Price-to-FCF-Ratio', 'Price-to-Book-Value', 'Price-to-Tangible-Book-Value', 'Gross-Margin', 'Operating-Margin', 'Net-Margin', 'Return-on-Invested-Capital', 'Return-on-Equity', 'Return-on-Asset', 'Interest-Coverage', 'Current-Ratio', 'Quick-Ratio', 'Receivables-Turnover', 'Asset-Turnover'].
+    :param metric_name: Metric name. Must be one of ['Market-Cap', 'Dividend-Yield', 'Outstanding-Shares', 'EBIT', 'EBITDA', 'Book-Value', 'Tangible-Book-Value', 'Enterprise-Value', 'FCF', 'PE-Diluted', 'PE', 'PEG-Ratio', 'PS', 'Price-to-FCF-Ratio', 'Price-to-Book-Value', 'Price-to-Tangible-Book-Value', 'Gross-Margin', 'Operating-Margin', 'Net-Margin', 'Return-on-Invested-Capital', 'Return-on-Equity', 'Return-on-Asset', 'Interest-Coverage', 'Current-Ratio', 'Quick-Ratio', 'Receivables-Turnover', 'Asset-Turnover'].
     :param start_year_quarter: Optional (default value is `None`). Default is 7 quarters from the latest available quarter.
     :param end_year_quarter: Optional (default value is `None`). Default is the latest available quarter.
     :return: {'result': `List of fundamental metrics.`}
