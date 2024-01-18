@@ -1,6 +1,21 @@
 from IntellectFinanceAPI.API.Utility import send_http_request
 
 
+def search_for_llm(query, offset=None): 
+    """
+    https://www.intellect.finance/API_Document#search_for_llm
+    Search for news, and get extractive segments that can feed into your LLMs. Currently we support the following 24 news sources: ['WSJ', 'CNN', 'www.sec.gov', 'New York Times', 'Washington Post', 'Forbes', 'Fox', 'Fox Business', 'Reuters', 'Economist', 'CNBC', 'Barrons', 'Bloomberg', 'Business Insider', 'Seeking Alpha', 'Marketwatch', 'PR Newswire', 'Business Wire', 'The Motley Foo', 'TechCrunch', 'Kiplinger', 'Investopedia', 'Nerdwallet', 'The Street'].
+
+    :example: search_for_llm(query='Nvidia valuations.', offset=0)
+    
+    :exception: ['ParameterInvalidError', 'ParameterMissingError']
+    :param query: Search query.
+    :param offset: Optional (default value is `0`). The starting position of a page. Default is 0. As we return 10 searched results in each page, to search for the second page, you can set the `offset` as `11`.
+    :return: {'result': `List of matched news.`}
+    """
+    return send_http_request('search_for_llm', query=query, offset=offset)
+
+
 def news_by_source(news_source, start_time, end_time): 
     """
     https://www.intellect.finance/API_Document#news_by_source
@@ -471,6 +486,26 @@ def fundamental_metrics(cik_or_ticker, metric_name, start_year_quarter=None, end
     :return: {'result': `List of fundamental metrics.`}
     """
     return send_http_request('fundamental_metrics', cik_or_ticker=cik_or_ticker, metric_name=metric_name, start_year_quarter=start_year_quarter, end_year_quarter=end_year_quarter)
+
+
+def stocker_screener(index_name, screening_metric, sic_code_prefix=None, min_value=None, max_value=None, min_percentile=None, max_percentile=None): 
+    """
+    https://www.intellect.finance/API_Document#stocker_screener
+    Screen stocks by certain fundamental, technical, or market criteria. You can screen stocks based on the metric values (by providing the `min_value` and `max_value` in the API), or based on the percentile of the metric values (by providing the `min_percentile` and `max_percentile` in the API). You can also select an SIC code to only apply the screening to certain industries.
+
+    :example: stocker_screener(index_name='SP500', screening_metric='PS', sic_code_prefix=35, min_value=1.2, max_value=3.1, min_percentile=0.1, max_percentile=0.5)
+    
+    :exception: ['ParameterInvalidError', 'ParameterMissingError']
+    :param index_name: The stock index name. We will screen the stocks within that index. The index name must be one of `SP500` (representing large-cap stocks), `SP_MIDCAP_400` (representing min-cap stocks), or`Russell_2000` (representing small-cap stocks).
+    :param screening_metric: The metric name used as the screening criteria. Must be one of `['Asset-Turnover', 'Current-Ratio', 'Dividend-Yield', 'Enterprise-Value', 'Gross-Margin', 'Interest-Coverage', 'Market-Cap', 'Net-Margin', 'Operating-Margin', 'PE-Diluted', 'PEG-Ratio', 'PS', 'Price-to-Book-Value', 'Price-to-FCF-Ratio', 'Price-to-Tangible-Book-Value', 'Quick-Ratio', 'Receivables-Turnover', 'Return-on-Asset', 'Return-on-Equity', 'Return-on-Invested-Capital', 'One-Year-Return', 'One-Month-Return']`.
+    :param sic_code_prefix: Optional (default value is ``). You can use the <a href='https://www.sec.gov/corpfin/division-of-corporation-finance-standard-industrial-classification-sic-code-list'>SIC code</a> as a filter for the industry. For example, you can provide `3571` to only screen the `ELECTRONIC COMPUTERS` industry. You can also only provide the prefix of the SIC code, such as `35`, which means we will apply the screen for different `Technology` industries. If missing (default), we will apply the screen for all stocks in the index. If provided, the percentile will also be calculated based on the stocks that match the provided SIC code predix.
+    :param min_value: Optional (default value is `-inf`). Minimum value of the screening metric (inclusive).
+    :param max_value: Optional (default value is `inf`). Maximum value of the screening metric (not inclusive).
+    :param min_percentile: Optional (default value is `0`). Minimum percentile (from 0 to 1) of the screening metric (inclusive).
+    :param max_percentile: Optional (default value is `1.0001`). Maximum percentile (from 0 to 1) of the screening metric (not inclusive).
+    :return: {'result': `List of stocks with the value and percentile of the screening criteria.`}
+    """
+    return send_http_request('stocker_screener', index_name=index_name, screening_metric=screening_metric, sic_code_prefix=sic_code_prefix, min_value=min_value, max_value=max_value, min_percentile=min_percentile, max_percentile=max_percentile)
 
 
 def list_sec_daily_filings(date, cik=None, _NEXT_TOKEN_=None): 
