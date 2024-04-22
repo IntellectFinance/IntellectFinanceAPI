@@ -1,10 +1,89 @@
 from IntellectFinanceAPI.API.Utility import send_http_request
 
 
+def buy_sell_or_hold_rating(ticker, _artifact_html_element=None): 
+    """
+    https://www.intellect.finance/API_Document#buy_sell_or_hold_rating
+    Retrieve an analyst rating (buy, sell, or hold) report in a Markdown format. Currently we only have the these reports for the SP500 companies.
+
+    :example: buy_sell_or_hold_rating(ticker='GOOGL', _artifact_html_element='artifact')
+    
+    :exception: ['ExceptionNoData', 'ParameterInvalidError', 'ParameterMissingError']
+    :param ticker: Ticker a company.
+    :param _artifact_html_element: Optional (default value is `None`). Element string to be added for artifact IDs. If added, then [id] will become [<artifact>id</id>].
+    :return: {'result': `A hashmap for one section of the rating report.`}
+    """
+    return send_http_request('buy_sell_or_hold_rating', ticker=ticker, _artifact_html_element=_artifact_html_element)
+
+
+def research_report(ticker, _list_type_reports=None): 
+    """
+    https://www.intellect.finance/API_Document#research_report
+    Retrieve an analyst research report in a Markdown format. Currently we only have the research reports for the SP500 companies.
+
+    :example: research_report(ticker='GOOGL', _list_type_reports='core,moat')
+    
+    :exception: ['ExceptionNoData', 'ParameterInvalidError', 'ParameterMissingError']
+    :param ticker: Ticker a company.
+    :param _list_type_reports: Optional (default value is `core,moat`). List of type of reports to be retrieved. Internal use only.
+    :return: {'result': `A hashmap for one section of the research report.`}
+    """
+    return send_http_request('research_report', ticker=ticker, _list_type_reports=_list_type_reports)
+
+
+def summary_news(ticker, _artifact_html_element=None): 
+    """
+    https://www.intellect.finance/API_Document#summary_news
+    Summarize the recent news in the past 60 days in a Markdown format. Currently we only support the SP500 companies.
+
+    :example: summary_news(ticker='GOOGL', _artifact_html_element='artifact')
+    
+    :exception: ['ExceptionNoData', 'ParameterInvalidError', 'ParameterMissingError']
+    :param ticker: Ticker a company.
+    :param _artifact_html_element: Optional (default value is `None`). Element string to be added for artifact IDs. If added, then [id] will become [<artifact>id</id>].
+    :return: {'result': `A hashmap for one section of the news summary.`}
+    """
+    return send_http_request('summary_news', ticker=ticker, _artifact_html_element=_artifact_html_element)
+
+
+def stocker_screener(index_name, screening_metric, sic_code_prefix=None, min_value=None, max_value=None, min_percentile=None, max_percentile=None): 
+    """
+    https://www.intellect.finance/API_Document#stocker_screener
+    Screen stocks by certain fundamental, technical, or market criteria. You can screen stocks based on the metric values (by providing the `min_value` and `max_value` in the API), or based on the percentile of the metric values (by providing the `min_percentile` and `max_percentile` in the API). You can also select an SIC code to only apply the screening to certain industries.
+
+    :example: stocker_screener(index_name='SP500', screening_metric='PS', sic_code_prefix=35, min_value=1.2, max_value=3.1, min_percentile=0.1, max_percentile=0.5)
+    
+    :exception: ['ParameterInvalidError', 'ParameterMissingError']
+    :param index_name: The stock index name. We will screen the stocks within that index. The index name must be one of `SP500` (representing large-cap stocks), `SP_MIDCAP_400` (representing min-cap stocks), or`Russell_2000` (representing small-cap stocks).
+    :param screening_metric: The metric name used as the screening criteria. Must be one of `['Asset-Turnover', 'Current-Ratio', 'Dividend-Yield', 'Enterprise-Value', 'Gross-Margin', 'Interest-Coverage', 'Market-Cap', 'Net-Margin', 'Operating-Margin', 'PE-Diluted', 'PEG-Ratio', 'PS', 'Price-to-Book-Value', 'Price-to-FCF-Ratio', 'Price-to-Tangible-Book-Value', 'Quick-Ratio', 'Receivables-Turnover', 'Return-on-Asset', 'Return-on-Equity', 'Return-on-Invested-Capital', 'One-Year-Return', 'One-Month-Return']`.
+    :param sic_code_prefix: Optional (default value is ``). You can use the <a href='https://www.sec.gov/corpfin/division-of-corporation-finance-standard-industrial-classification-sic-code-list'>SIC code</a> as a filter for the industry. For example, you can provide `3571` to only screen the `ELECTRONIC COMPUTERS` industry. You can also only provide the prefix of the SIC code, such as `35`, which means we will apply the screen for different `Technology` industries. If missing (default), we will apply the screen for all stocks in the index. If provided, the percentile will also be calculated based on the stocks that match the provided SIC code predix.
+    :param min_value: Optional (default value is `-inf`). Minimum value of the screening metric (inclusive).
+    :param max_value: Optional (default value is `inf`). Maximum value of the screening metric (not inclusive).
+    :param min_percentile: Optional (default value is `0`). Minimum percentile (from 0 to 1) of the screening metric (inclusive).
+    :param max_percentile: Optional (default value is `1.0001`). Maximum percentile (from 0 to 1) of the screening metric (not inclusive).
+    :return: {'result': `List of stocks with the value and percentile of the screening criteria.`}
+    """
+    return send_http_request('stocker_screener', index_name=index_name, screening_metric=screening_metric, sic_code_prefix=sic_code_prefix, min_value=min_value, max_value=max_value, min_percentile=min_percentile, max_percentile=max_percentile)
+
+
+def earning_call_and_other_presentations(ticker): 
+    """
+    https://www.intellect.finance/API_Document#earning_call_and_other_presentations
+    Retrieve the last 5 earning call / management presentations summaries. Currently we only support the SP500 companies.
+
+    :example: earning_call_and_other_presentations(ticker='GOOGL')
+    
+    :exception: ['ExceptionNoData', 'ParameterInvalidError', 'ParameterMissingError']
+    :param ticker: Ticker a company.
+    :return: {'result': `A list of summaries for earning calls / presentations.`}
+    """
+    return send_http_request('earning_call_and_other_presentations', ticker=ticker)
+
+
 def search_for_llm(query, offset=None): 
     """
     https://www.intellect.finance/API_Document#search_for_llm
-    Search for news, and get extractive segments that can feed into your LLMs. Currently we support the following 24 news sources: ['WSJ', 'CNN', 'www.sec.gov', 'New York Times', 'Washington Post', 'Forbes', 'Fox', 'Fox Business', 'Reuters', 'Economist', 'CNBC', 'Barrons', 'Bloomberg', 'Business Insider', 'Seeking Alpha', 'Marketwatch', 'PR Newswire', 'Business Wire', 'The Motley Foo', 'TechCrunch', 'Kiplinger', 'Investopedia', 'Nerdwallet', 'The Street'].
+    Search for news, and get extractive segments that can feed into your LLMs. Currently we support the following 25 news sources: `['WSJ', 'CNN', 'www.sec.gov', 'en.wikipedia.org', 'New York Times', 'Washington Post', 'Forbes', 'Fox', 'Fox Business', 'Reuters', 'Economist', 'CNBC', 'Barrons', 'Bloomberg', 'Business Insider', 'Seeking Alpha', 'Marketwatch', 'PR Newswire', 'Business Wire', 'The Motley Foo', 'TechCrunch', 'Kiplinger', 'Investopedia', 'Nerdwallet', 'The Street']`.
 
     :example: search_for_llm(query='Nvidia valuations.', offset=0)
     
@@ -32,23 +111,24 @@ def news_by_source(news_source, start_time, end_time):
     return send_http_request('news_by_source', news_source=news_source, start_time=start_time, end_time=end_time)
 
 
-def news_by_ticker(ticker, start_date, end_date, stop_at_number_of_news=None, if_dedupe_news_ind=None, if_most_relevant_news_ind=None): 
+def news_by_ticker(ticker, start_date, end_date, stop_at_number_of_news=None, if_dedupe_news_ind=None, if_most_relevant_news_ind=None, relevant_news_min_score=None): 
     """
     https://www.intellect.finance/API_Document#news_by_ticker
     Get a list of news that is relevant to a company. The list will be sorted by the news' publish time (descending, which means later news will be on top of the list). Maximum number of news to retrieve is 1000.
 
-    :example: news_by_ticker(ticker='AAPL', start_date='2022-02-01', end_date='2022-02-08', stop_at_number_of_news=1000, if_dedupe_news_ind='True', if_most_relevant_news_ind='False')
+    :example: news_by_ticker(ticker='AAPL', start_date='2022-02-01', end_date='2022-02-08', stop_at_number_of_news=1000, if_dedupe_news_ind='True', if_most_relevant_news_ind='False', relevant_news_min_score=0.6)
     
     :exception: ['ParameterInvalidError', 'ParameterMissingError']
     :param ticker: The ticker.
     :param start_date: Start date (UTC) of the news range. Its format should be `YYYY-MM-DD`. Default is 90 days earlier from today.
     :param end_date: End date (UTC) (including) of the news range. Its format should be `YYYY-MM-DD`. Default is today.
-    :param stop_at_number_of_news: Optional (default value is `1000`). Max number of news to retrieve. Must be an integer between 1 and 1000. Default (if not provided) is 1000. If `if_most_relevant_news_ind` is `False` (default), it means we will only retrieve the latest `stop_at_number_of_news` number of pieces of news. If `if_most_relevant_news_ind` is `True`, it means we will only retrieve the top `stop_at_number_of_news` important news.
+    :param stop_at_number_of_news: Optional (default value is `1000`). Max number of news to retrieve. Must be an integer between 1 and 1000. Default (if not provided) is 1000. If `if_most_relevant_news_ind` is `False` (default), it means we will only retrieve the latest `stop_at_number_of_news` number of pieces of news. If `if_most_relevant_news_ind` is `True`, it means we will only retrieve the top `stop_at_number_of_news` relevant news.
     :param if_dedupe_news_ind: Optional (default value is `True`). Sometimes, similar news will be reported by several different news sources. For example, on 2022-12-08, CNBC, WSJ and Bloomberg all reported the news that "FTC Sues to Block Microsoft’s Acquisition of Activision Blizzard". This option will enable the API to dedupe such duplicated news (typically keep the earliest news). Default is `True`. You can also get ALL the news (including the duplicated ones) by providing `False`.
-    :param if_most_relevant_news_ind: Optional (default value is `False`). Pull relevant news only (Score of the relevance (`cos`) has to be equal or larger than 0.6 for the inputted ticker). Default is False.
+    :param if_most_relevant_news_ind: Optional (default value is `False`). Pull relevant news only Default is False.
+    :param relevant_news_min_score: Optional (default value is `_DEFAULT_MIN_SCORE`). Min relevance score, only relevant if `if_most_relevant_news_ind` = True.
     :return: {'result': `A list of news.`}
     """
-    return send_http_request('news_by_ticker', ticker=ticker, start_date=start_date, end_date=end_date, stop_at_number_of_news=stop_at_number_of_news, if_dedupe_news_ind=if_dedupe_news_ind, if_most_relevant_news_ind=if_most_relevant_news_ind)
+    return send_http_request('news_by_ticker', ticker=ticker, start_date=start_date, end_date=end_date, stop_at_number_of_news=stop_at_number_of_news, if_dedupe_news_ind=if_dedupe_news_ind, if_most_relevant_news_ind=if_most_relevant_news_ind, relevant_news_min_score=relevant_news_min_score)
 
 
 def news_by_topic(topic_name, start_date, end_date): 
@@ -100,9 +180,9 @@ def time_series_topic_names(start_date, end_date):
 def time_series_topic_sentiment(topic_name, start_date, end_date): 
     """
     https://www.intellect.finance/API_Document#time_series_topic_sentiment
-    Get a daily time series of sentiment scores for a topic (the time range cannot be more than 90 days.
+    Get a daily time series of sentiment scores for a topic (the time range cannot be more than 900 days.
 
-    :example: time_series_topic_sentiment(topic_name='President Biden', start_date='2022-03-30', end_date='2022-06-27')
+    :example: time_series_topic_sentiment(topic_name='President Biden', start_date='2022-03-30', end_date='2024-09-14')
     
     :exception: ['ParameterInvalidError', 'ParameterMissingError', 'TopicNotFoundError']
     :param topic_name: A topic name. Note that we only accept topic names that are listed in the `time_series_topic_names` API.
@@ -223,9 +303,9 @@ def sentiment_overall(input):
 def time_series_ticker_sentiment(ticker, start_date, end_date): 
     """
     https://www.intellect.finance/API_Document#time_series_ticker_sentiment
-    Get a daily time series of sentiment scores for a ticker (the time range cannot be more than 90 days). 
+    Get a daily time series of sentiment scores for a ticker (the time range cannot be more than 900 days). 
 
-    :example: time_series_ticker_sentiment(ticker='AMZN', start_date='2021-06-30', end_date='2021-09-27')
+    :example: time_series_ticker_sentiment(ticker='AMZN', start_date='2021-06-30', end_date='2023-12-16')
     
     :exception: ['ParameterInvalidError', 'ParameterMissingError']
     :param ticker: A ticker.
@@ -476,7 +556,7 @@ def fundamental_metrics(cik_or_ticker, metric_name, start_year_quarter=None, end
     https://www.intellect.finance/API_Document#fundamental_metrics
     Get fundamental metrics (such as P/E and P/S ratios) by quarter. If the metric requires stock price as the input (such as PE), we will use the latest stock price for the latest quarter, whereas for other quarters, we will use the volume-weighted average end-of-day stock price one month after the fiscal quarter ends (For example, if the fiscal quarter ends at 12/31/2022, we will use the stock price from 02/01/2023 - 02/28/2023).
 
-    :example: fundamental_metrics(cik_or_ticker=789019, metric_name='PE', start_year_quarter='2021Q3', end_year_quarter='2024Q1')
+    :example: fundamental_metrics(cik_or_ticker=789019, metric_name='PE', start_year_quarter='2021Q3', end_year_quarter='2024Q2')
     
     :exception: ['ExceptionNoData', 'ParameterInvalidError', 'ParameterMissingError']
     :param cik_or_ticker: CIK or ticker a company.
@@ -486,26 +566,6 @@ def fundamental_metrics(cik_or_ticker, metric_name, start_year_quarter=None, end
     :return: {'result': `List of fundamental metrics.`}
     """
     return send_http_request('fundamental_metrics', cik_or_ticker=cik_or_ticker, metric_name=metric_name, start_year_quarter=start_year_quarter, end_year_quarter=end_year_quarter)
-
-
-def stocker_screener(index_name, screening_metric, sic_code_prefix=None, min_value=None, max_value=None, min_percentile=None, max_percentile=None): 
-    """
-    https://www.intellect.finance/API_Document#stocker_screener
-    Screen stocks by certain fundamental, technical, or market criteria. You can screen stocks based on the metric values (by providing the `min_value` and `max_value` in the API), or based on the percentile of the metric values (by providing the `min_percentile` and `max_percentile` in the API). You can also select an SIC code to only apply the screening to certain industries.
-
-    :example: stocker_screener(index_name='SP500', screening_metric='PS', sic_code_prefix=35, min_value=1.2, max_value=3.1, min_percentile=0.1, max_percentile=0.5)
-    
-    :exception: ['ParameterInvalidError', 'ParameterMissingError']
-    :param index_name: The stock index name. We will screen the stocks within that index. The index name must be one of `SP500` (representing large-cap stocks), `SP_MIDCAP_400` (representing min-cap stocks), or`Russell_2000` (representing small-cap stocks).
-    :param screening_metric: The metric name used as the screening criteria. Must be one of `['Asset-Turnover', 'Current-Ratio', 'Dividend-Yield', 'Enterprise-Value', 'Gross-Margin', 'Interest-Coverage', 'Market-Cap', 'Net-Margin', 'Operating-Margin', 'PE-Diluted', 'PEG-Ratio', 'PS', 'Price-to-Book-Value', 'Price-to-FCF-Ratio', 'Price-to-Tangible-Book-Value', 'Quick-Ratio', 'Receivables-Turnover', 'Return-on-Asset', 'Return-on-Equity', 'Return-on-Invested-Capital', 'One-Year-Return', 'One-Month-Return']`.
-    :param sic_code_prefix: Optional (default value is ``). You can use the <a href='https://www.sec.gov/corpfin/division-of-corporation-finance-standard-industrial-classification-sic-code-list'>SIC code</a> as a filter for the industry. For example, you can provide `3571` to only screen the `ELECTRONIC COMPUTERS` industry. You can also only provide the prefix of the SIC code, such as `35`, which means we will apply the screen for different `Technology` industries. If missing (default), we will apply the screen for all stocks in the index. If provided, the percentile will also be calculated based on the stocks that match the provided SIC code predix.
-    :param min_value: Optional (default value is `-inf`). Minimum value of the screening metric (inclusive).
-    :param max_value: Optional (default value is `inf`). Maximum value of the screening metric (not inclusive).
-    :param min_percentile: Optional (default value is `0`). Minimum percentile (from 0 to 1) of the screening metric (inclusive).
-    :param max_percentile: Optional (default value is `1.0001`). Maximum percentile (from 0 to 1) of the screening metric (not inclusive).
-    :return: {'result': `List of stocks with the value and percentile of the screening criteria.`}
-    """
-    return send_http_request('stocker_screener', index_name=index_name, screening_metric=screening_metric, sic_code_prefix=sic_code_prefix, min_value=min_value, max_value=max_value, min_percentile=min_percentile, max_percentile=max_percentile)
 
 
 def list_sec_daily_filings(date, cik=None, _NEXT_TOKEN_=None): 
@@ -569,7 +629,7 @@ def sec_other(cik_or_ticker, start_date, end_date):
 def sec_10k_10q_20f_40f(cik_or_ticker, start_date, end_date): 
     """
     https://www.intellect.finance/API_Document#sec_10k_10q_20f_40f
-    Get a list of 10-K, 10-Q, 20-F, or 40-F filings in a certain date period (cannot be more than 380 days). 
+    Get a list of 10-K, 10-Q, 20-F, or 40-F filings in a certain date period (cannot be more than 580 days). 
     Such filings are the quarterly or annual report of companies. 
     10-K (annual) and 10-Q (quarterly) are for domestic companies (U.S.), 
     whereas 20-F and 40-F (both annual) are for foreign companies. 
