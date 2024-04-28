@@ -1,49 +1,46 @@
 from IntellectFinanceAPI.API.Utility import send_http_request
 
 
-def buy_sell_or_hold_rating(ticker, _artifact_html_element=None): 
+def buy_sell_or_hold_rating(ticker): 
     """
     https://www.intellect.finance/API_Document#buy_sell_or_hold_rating
     Retrieve an analyst rating (buy, sell, or hold) report in a Markdown format. Currently we only have the these reports for the SP500 companies.
 
-    :example: buy_sell_or_hold_rating(ticker='GOOGL', _artifact_html_element='artifact')
+    :example: buy_sell_or_hold_rating(ticker='GOOGL')
     
     :exception: ['ExceptionNoData', 'ParameterInvalidError', 'ParameterMissingError']
     :param ticker: Ticker a company.
-    :param _artifact_html_element: Optional (default value is `None`). Element string to be added for artifact IDs. If added, then [id] will become [<artifact>id</id>].
     :return: {'result': `A hashmap for one section of the rating report.`}
     """
-    return send_http_request('buy_sell_or_hold_rating', ticker=ticker, _artifact_html_element=_artifact_html_element)
+    return send_http_request('buy_sell_or_hold_rating', ticker=ticker)
 
 
-def research_report(ticker, _list_type_reports=None): 
+def research_report(ticker): 
     """
     https://www.intellect.finance/API_Document#research_report
     Retrieve an analyst research report in a Markdown format. Currently we only have the research reports for the SP500 companies.
 
-    :example: research_report(ticker='GOOGL', _list_type_reports='core,moat')
+    :example: research_report(ticker='GOOGL')
     
     :exception: ['ExceptionNoData', 'ParameterInvalidError', 'ParameterMissingError']
     :param ticker: Ticker a company.
-    :param _list_type_reports: Optional (default value is `core,moat`). List of type of reports to be retrieved. Internal use only.
     :return: {'result': `A hashmap for one section of the research report.`}
     """
-    return send_http_request('research_report', ticker=ticker, _list_type_reports=_list_type_reports)
+    return send_http_request('research_report', ticker=ticker)
 
 
-def summary_news(ticker, _artifact_html_element=None): 
+def summary_news(ticker): 
     """
     https://www.intellect.finance/API_Document#summary_news
     Summarize the recent news in the past 60 days in a Markdown format. Currently we only support the SP500 companies.
 
-    :example: summary_news(ticker='GOOGL', _artifact_html_element='artifact')
+    :example: summary_news(ticker='GOOGL')
     
     :exception: ['ExceptionNoData', 'ParameterInvalidError', 'ParameterMissingError']
     :param ticker: Ticker a company.
-    :param _artifact_html_element: Optional (default value is `None`). Element string to be added for artifact IDs. If added, then [id] will become [<artifact>id</id>].
     :return: {'result': `A hashmap for one section of the news summary.`}
     """
-    return send_http_request('summary_news', ticker=ticker, _artifact_html_element=_artifact_html_element)
+    return send_http_request('summary_news', ticker=ticker)
 
 
 def stocker_screener(index_name, screening_metric, sic_code_prefix=None, min_value=None, max_value=None, min_percentile=None, max_percentile=None): 
@@ -80,19 +77,24 @@ def earning_call_and_other_presentations(ticker):
     return send_http_request('earning_call_and_other_presentations', ticker=ticker)
 
 
-def search_for_llm(query, offset=None): 
+def search_for_llm(query, search_engine=None, offset=None, visit_uncached_source=None, publish_dt_est_min=None, publish_dt_est_max=None, max_news_for_extraction=None): 
     """
     https://www.intellect.finance/API_Document#search_for_llm
     Search for news, and get extractive segments that can feed into your LLMs. Currently we support the following 25 news sources: `['WSJ', 'CNN', 'www.sec.gov', 'en.wikipedia.org', 'New York Times', 'Washington Post', 'Forbes', 'Fox', 'Fox Business', 'Reuters', 'Economist', 'CNBC', 'Barrons', 'Bloomberg', 'Business Insider', 'Seeking Alpha', 'Marketwatch', 'PR Newswire', 'Business Wire', 'The Motley Foo', 'TechCrunch', 'Kiplinger', 'Investopedia', 'Nerdwallet', 'The Street']`.
 
-    :example: search_for_llm(query='Nvidia valuations.', offset=0)
+    :example: search_for_llm(query='Nvidia valuations.', search_engine='bing_news_search', offset=0, visit_uncached_source=True, publish_dt_est_min='2024-01-04', publish_dt_est_max='9999-12-31', max_news_for_extraction=3)
     
     :exception: ['ParameterInvalidError', 'ParameterMissingError']
     :param query: Search query.
+    :param search_engine: Optional (default value is `google_search`). Search engine to use. Either `google_search` (default), which can provide snippets, or `bing_news_search`, which targets the news search. For `bing_news_search`, the snippets are list of important (defined by TF-IDF score) keywords we extracted from the whole search result.
     :param offset: Optional (default value is `0`). The starting position of a page. Default is 0. As we return 10 searched results in each page, to search for the second page, you can set the `offset` as `11`.
+    :param visit_uncached_source: Optional (default value is `True`). We may not cache every news in our database. For the un-cached ones, we will have to visit the URL at the query time. Therefore, if visit_uncached_source is False, we will only return snippets, rather than extractive_segments, and query latency will be reduced.
+    :param publish_dt_est_min: Optional (default value is `EMPTY`). Earliest publishing time of the news to retrieve the extractive_segments. If not provided, then no such filter will be applied.
+    :param publish_dt_est_max: Optional (default value is `EMPTY`). Latest publishing time of the news to retrieve the extractive_segments. If not provided, then no such filter will be applied.
+    :param max_news_for_extraction: Optional (default value is `EMPTY`). Max number of news we want to get the extraction. Default is all.
     :return: {'result': `List of matched news.`}
     """
-    return send_http_request('search_for_llm', query=query, offset=offset)
+    return send_http_request('search_for_llm', query=query, search_engine=search_engine, offset=offset, visit_uncached_source=visit_uncached_source, publish_dt_est_min=publish_dt_est_min, publish_dt_est_max=publish_dt_est_max, max_news_for_extraction=max_news_for_extraction)
 
 
 def news_by_source(news_source, start_time, end_time): 
@@ -568,7 +570,7 @@ def fundamental_metrics(cik_or_ticker, metric_name, start_year_quarter=None, end
     return send_http_request('fundamental_metrics', cik_or_ticker=cik_or_ticker, metric_name=metric_name, start_year_quarter=start_year_quarter, end_year_quarter=end_year_quarter)
 
 
-def list_sec_daily_filings(date, cik=None, _NEXT_TOKEN_=None): 
+def list_sec_daily_filings(date, cik=None): 
     """
     https://www.intellect.finance/API_Document#list_sec_daily_filings
     Get the list of all filings reported to SEC on a certain date. 
@@ -579,15 +581,14 @@ def list_sec_daily_filings(date, cik=None, _NEXT_TOKEN_=None):
     we will return a `_NEXT_TOKEN_` value, 
     and you can pass this value through the `_NEXT_TOKEN_` parameter in the API URL to continue to retrieve more data.
 
-    :example: list_sec_daily_filings(date='2022-02-01', cik='1652044', _NEXT_TOKEN_=500)
+    :example: list_sec_daily_filings(date='2022-02-01', cik='1652044')
     
     :exception: ['ParameterInvalidError', 'ParameterMissingError']
     :param date: Date that SEC indexed the filings. Usually this date is the filling date.
     :param cik: Optional (default value is `EMPTY`). If you only know the ticker of a company (say AAPL), the corresponding CIK of that company can be retrieved through the `company_info_by_ticker` API.
-    :param _NEXT_TOKEN_: Optional (default value is `None`). Next token, used to continue to retrieve more data. If not provided, we will retrieve the data from the beginning.
     :return: {'result': `A list of filings.`}
     """
-    return send_http_request('list_sec_daily_filings', date=date, cik=cik, _NEXT_TOKEN_=_NEXT_TOKEN_)
+    return send_http_request('list_sec_daily_filings', date=date, cik=cik)
 
 
 def sec_8k_6k(cik_or_ticker, start_date, end_date): 
